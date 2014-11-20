@@ -1,0 +1,68 @@
+{
+  "name": "jetstream",
+  "version": "0.1.0",
+  "description": "Jetstream Sync server framework to sync local and remote models",
+  "keywords": [
+    "framework",
+    "realtime",
+    "modular"
+  ],
+  "author": "Rob Skillington <r@uber.com>",
+  "repository": "git://github.com/uber/jetstream.git",
+  "main": "index",
+  "homepage": "https://github.com/uber/jetstream",
+  "contributors": [
+    {
+      "name": "Rob Skillington"
+    },
+    {
+      "name": "Tuomas Artman"
+    }
+  ],
+  "scripts": {
+    "jshint": "jshint --verbose .",
+    "test": "cached-tape test/index.js | tap-spec",
+    "test-cover": "istanbul cover cached-tape -- test/index.js",
+    "view-cover": "istanbul report html && open ./coverage/index.html",
+    "start": "node demos/shapes/app.js"
+  },
+  "dependencies": {
+    "async": "^0.9.0",
+    "body-parser": "^1.6.5",
+    "callback-or-emit-error": "^1.0.1",
+    "debug": "^1.0.4",
+    "express": "^4.8.5",
+    "lodash": "^2.4.1",
+    "maybe-callback": "^1.0.0",
+    "node-uuid": "^1.4.1",
+    "robb": "^0.2.1",
+    "semver": "^4.0.0",
+    "winston": "^0.7.3",
+    "ws": "^0.4.32"
+  },
+  "devDependencies": {
+    "cached-tape": "^2.0.0",
+    "chai": "^1.9.1",
+    "grunt": "^0.4.5",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-run": "^0.2.4",
+    "istanbul": "^0.3.0",
+    "mocha": "^1.21.4",
+    "nodemon": "^1.2.1",
+    "opn": "^1.0.0",
+    "sinon": "^1.10.3",
+    "tap-spec": "^1.0.0",
+    "tape": "^3.0.0",
+    "underscore": "^1.6.0"
+  },
+  "bugs": {
+    "url": "https://github.com/uber/jetstream/issues",
+    "email": "r@uber.com"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/uber/jetstream/LICENSE"
+    }
+  ]
+}
