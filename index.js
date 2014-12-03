@@ -26,6 +26,7 @@ var _ = require('lodash');
 var ModelObject = require('./lib/model_object');
 var Scope = require('./lib/scope');
 var Server = require('./lib/server');
+var StorageMiddleware = require('./lib/middleware/storage/storage_middleware');
 
 // Framework server constructor helper
 module.exports = function(options) {
@@ -44,12 +45,16 @@ module.exports = _.extend(module.exports, {
         return new Scope(options);
     },
 
+    storage: function(options) {
+        return new StorageMiddleware(options);
+    },
+
     // Classes
     middleware: {
         persist: {
             Memory: require('./lib/middleware/persist/memory_persist_middleware')
         },
-        Storage: require('./lib/middleware/storage/storage_middleware')
+        Storage: StorageMiddleware
     },
 
     transport: {

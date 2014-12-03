@@ -77,9 +77,9 @@ var scope = createScope({name: 'Canvas'});
 scope.setRoot(canvas);
 
 // Start server with default transports
-var server = createServer({
-    transports: [createWebsocketTransport({port: 3000})]
-});
+var websocketTransport = createWebsocketTransport({port: 3000});
+var transports = [websocketTransport];
+var server = createServer({transports: transports});
 server.on('session', function(session, params, callback) {
     // Accept the session, no authentication or authorization in this example
     callback();

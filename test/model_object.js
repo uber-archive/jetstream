@@ -44,13 +44,6 @@ describe(method('model'), 'when defining a model', function(thing) {
         assert.end();
     });
 
-    test(thing('should throw when definition not given'), function t(assert) {
-        assert.throws(function() {
-            ModelObject.model('SomeModel', undefined);
-        }, /model definition/);
-        assert.end();
-    });
-
     test(thing('should set the static and prototype typeName'), function t(assert) {
         var SomeModel = ModelObject.model('SomeModel', function() {});
         assert.equal(SomeModel.typeName, 'SomeModel');
@@ -98,11 +91,11 @@ describe(method('has'), 'when defining model properties', function(thing) {
     });
 
     test(thing('should inherit supertype properties'), function t(assert) {
-        var SomeModel = ModelObject.model('SomeModel', function() {
+        var SomeSuperModel = ModelObject.model('SomeSuperModel', function() {
             this.has('aProperty', String);
         });
 
-        var SomeChildModel = SomeModel.model('SomeChildModel', function() {
+        var SomeChildModel = SomeSuperModel.model('SomeChildModel', function() {
             this.has('anotherProperty', Number);
         });
 
@@ -110,6 +103,49 @@ describe(method('has'), 'when defining model properties', function(thing) {
 
         var properties = someModel.getProperties();
         assert.equal(properties.length, 2);
+        assert.equal(someModel.getProperty('aProperty').singleType, String);
+        assert.equal(someModel.getProperty('anotherProperty').singleType, Number);
+
+        assert.end();
+    });
+
+    test(thing('should inherit late added supertype properties'), function t(assert) {
+        var SomeSuperModel = ModelObject.model('SomeSuperModel');
+
+        var SomeChildModel = SomeSuperModel.model('SomeChildModel', function() {
+            this.has('anotherProperty', Number);
+        });
+
+        SomeSuperModel.has('aProperty', String);
+
+        var someModel = new SomeChildModel();
+
+        var properties = someModel.getProperties();
+        assert.equal(properties.length, 2);
+        assert.equal(someModel.getProperty('aProperty').singleType, String);
+        assert.equal(someModel.getProperty('anotherProperty').singleType, Number);
+
+        assert.end();
+    });
+
+    test(thing('should late inherit supertype properties'), function t(assert) {
+        var SomeSuperModel = ModelObject.model('SomeSuperModel', function() {
+            this.has('aProperty', String);
+        });
+
+        var SomeChildModel = ModelObject.model('SomeChildModel', function() {
+            this.has('anotherProperty', Number);
+        });
+
+        var properties = new SomeChildModel().getProperties();
+        assert.equal(properties.length, 1);
+
+        SomeChildModel.inherit(SomeSuperModel);
+
+        properties = new SomeChildModel().getProperties();
+        assert.equal(properties.length, 2);
+
+        var someModel = new SomeChildModel();
         assert.equal(someModel.getProperty('aProperty').singleType, String);
         assert.equal(someModel.getProperty('anotherProperty').singleType, Number);
 
