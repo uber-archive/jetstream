@@ -28,7 +28,7 @@ var createTestContext = require('./test/test_context');
 var ModelObject = require('../lib/model_object');
 var Scope = require('../lib/scope');
 var sinon = require('sinon');
-var test = require('cached-tape');
+var test = require('redtape')();
 var uuid = require('node-uuid');
 
 var context = createTestContext('ModelObject');

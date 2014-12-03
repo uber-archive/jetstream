@@ -26,7 +26,7 @@ var createTestContext = require('../test/test_context');
 var NetworkMessageParser = require('../../lib/message/network_message_parser');
 var ReplyMessage = require('../../lib/message/reply_message');
 var SessionCreateMessage = require('../../lib/message/session_create_message');
-var test = require('cached-tape');
+var test = require('redtape')();
 var underscore = require('underscore');
 
 var context = createTestContext('NetworkMessageParser');

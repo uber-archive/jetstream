@@ -24,7 +24,7 @@
 
 var AbstractNetworkMessage = require('../../lib/message/abstract_network_message');
 var createTestContext = require('../test/test_context');
-var test = require('cached-tape');
+var test = require('redtape')();
 var util = require('util');
 
 var context = createTestContext('AbstractNetworkMessage');

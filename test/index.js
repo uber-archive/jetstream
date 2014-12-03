@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+require('./enumeration');
 require('./json_reader');
 require('./message/abstract_network_message');
 require('./message/network_message_parser');

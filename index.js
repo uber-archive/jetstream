@@ -23,6 +23,7 @@
 // THE SOFTWARE.
 
 var _ = require('lodash');
+var Enumeration = require('./lib/enumeration');
 var ModelObject = require('./lib/model_object');
 var Scope = require('./lib/scope');
 var Server = require('./lib/server');
@@ -37,6 +38,10 @@ module.exports = function(options) {
 
 module.exports = _.extend(module.exports, {
     // Framework methods
+    enumeration: function(name, type, values) {
+        return Enumeration.type(name, type, values);
+    },
+
     model: function(name, definition) {
         return ModelObject.model(name, definition);
     },
