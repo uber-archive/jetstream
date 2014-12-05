@@ -25,6 +25,7 @@
 var _ = require('lodash');
 var Enumeration = require('./lib/enumeration');
 var ModelObject = require('./lib/model_object');
+var Repl = require('./lib/repl');
 var Scope = require('./lib/scope');
 var Server = require('./lib/server');
 var StorageMiddleware = require('./lib/middleware/storage/storage_middleware');
@@ -52,6 +53,10 @@ module.exports = _.extend(module.exports, {
 
     storage: function(options) {
         return new StorageMiddleware(options);
+    },
+
+    enableRepl: function(options) {
+        Repl.enable(options);
     },
 
     // Classes

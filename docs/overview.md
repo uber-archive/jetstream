@@ -54,7 +54,7 @@ jetstream : JetStream
 type ObjectUUID : String
 
 type SyncFragmentType :
-    "root" | "add" | "change" | "remove" | "movechange"
+    "add" | "change"
 
 -- A SyncFragment is a data structure for a fragment of data
 --      that you want to sync between server and client.

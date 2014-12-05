@@ -35,6 +35,7 @@
     "lodash": "^2.4.1",
     "maybe-callback": "^1.0.0",
     "node-uuid": "^1.4.1",
+    "replr": "^0.2.4",
     "robb": "^0.2.1",
     "semver": "^4.0.0",
     "winston": "^0.7.3",

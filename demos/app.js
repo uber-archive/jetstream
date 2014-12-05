@@ -35,21 +35,22 @@ var ChatRoom = require('./chat').ChatRoom;
 var Canvas = require('./shapes').Canvas;
 
 // Examples of connecting multiple clients to a shared scope
-var chatScope = createScope({name: 'ChatRoom'});
-var shapesScope = createScope({name: 'Canvas'});
-var scopes = [chatScope, shapesScope];
-
-// Setup the chat demo
-var chatRoom = new ChatRoom();
-chatRoom.name = 'Chat Demo';
-
-chatScope.setRoot(chatRoom);
+var demo = {
+    shapesScope: createScope({name: 'Canvas'}),
+    chatScope: createScope({name: 'ChatRoom'})
+};
+demo.scopes = [demo.shapesScope, demo.chatScope];
 
 // Setup the shapes demo
-var canvas = new Canvas();
-canvas.name = 'Shapes Demo';
+demo.canvas = new Canvas();
+demo.canvas.name = 'Shapes Demo';
+demo.shapesScope.setRoot(demo.canvas);
 
-shapesScope.setRoot(canvas);
+// Setup the chat demo
+demo.chatRoom = new ChatRoom();
+demo.chatRoom.name = 'Chat Demo';
+
+demo.chatScope.setRoot(demo.chatRoom);
 
 // Start server with default transports
 var websocketTransport = createWebsocketTransport({port: 3000});
@@ -62,7 +63,7 @@ server.on('session', function(session, connection, params, callback) {
     session.on('fetch', function(name, params, callback) {
         // Connect the requested scope if demo scope is available
         var hasScope = false;
-        scopes.forEach(function(scope) {
+        demo.scopes.forEach(function(scope) {
             if (!hasScope && scope.name === name) {
                 hasScope = true;
                 callback(null, scope);
@@ -72,4 +73,16 @@ server.on('session', function(session, connection, params, callback) {
             callback(new Error('No such scope'));
         }
     });
+});
+
+// Enable repl for debugging, this is non-essential
+require('../').enableRepl({
+    exports: {
+        demo: function() {
+            /* jshint ignore:start */
+            doc: 'Gets the demo scopes and root objects'
+            /* jshint ignore:end */
+            return demo;
+        }
+    }
 });
