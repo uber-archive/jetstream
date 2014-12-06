@@ -94,30 +94,9 @@ server.on('session', function(session, params, callback) {
 });
 
 ```
+### Protocol
 
-# Protocol
-
-## Messages
-
-The following message types and comprise the sync protocol language:
-- SessionCreate: Create a session with a set of arguments
-- SessionCreateResponse: Accept or deny a client session
-- ScopeFetch: Fetch an a ModelObject graph with a given scope
-- ScopeState: The full state of a fetched scope 
-- ScopeSync: A set of updates for objects in a scope
-- Reply: A reply to a message issued by a party with a response
-
-For a full description of the protocol, refer to the [protocol section of our wiki]( https://github.com/uber/jetstream/wiki/Protocol).
-
-## SyncFragment
-
-ScopeState and ScopeSync messages contain SyncFragments. A SyncFragment describes an add or change of an object.
-
-A SyncFragment has the following fields:
-- Type: one of “add” or “change”
-- UUID: universal ID that identifies the ModelObject, currently using UUID v4
-- Class name: the class name of the ModelObject
-- Properties: a key-value dictionary of property values
+Jetstream uses JSON-based messages to create sessions, fetch scopes and synchronize changes. In case you want to build your own client or server, refer to the [protocol documentation](https://github.com/uber/jetstream/wiki/Protocol).
 
 # License
 
