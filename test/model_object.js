@@ -28,7 +28,7 @@ var createTestContext = require('./test/test_context');
 var ModelObject = require('../lib/model_object');
 var Scope = require('../lib/scope');
 var sinon = require('sinon');
-var test = require('cached-tape');
+var test = require('redtape')();
 var uuid = require('node-uuid');
 
 var context = createTestContext('ModelObject');
@@ -41,13 +41,6 @@ describe(method('model'), 'when defining a model', function(thing) {
         assert.throws(function() {
             ModelObject.model(undefined, function() {});
         }, /model name/);
-        assert.end();
-    });
-
-    test(thing('should throw when definition not given'), function t(assert) {
-        assert.throws(function() {
-            ModelObject.model('SomeModel', undefined);
-        }, /model definition/);
         assert.end();
     });
 
@@ -98,11 +91,11 @@ describe(method('has'), 'when defining model properties', function(thing) {
     });
 
     test(thing('should inherit supertype properties'), function t(assert) {
-        var SomeModel = ModelObject.model('SomeModel', function() {
+        var SomeSuperModel = ModelObject.model('SomeSuperModel', function() {
             this.has('aProperty', String);
         });
 
-        var SomeChildModel = SomeModel.model('SomeChildModel', function() {
+        var SomeChildModel = SomeSuperModel.model('SomeChildModel', function() {
             this.has('anotherProperty', Number);
         });
 
@@ -110,6 +103,49 @@ describe(method('has'), 'when defining model properties', function(thing) {
 
         var properties = someModel.getProperties();
         assert.equal(properties.length, 2);
+        assert.equal(someModel.getProperty('aProperty').singleType, String);
+        assert.equal(someModel.getProperty('anotherProperty').singleType, Number);
+
+        assert.end();
+    });
+
+    test(thing('should inherit late added supertype properties'), function t(assert) {
+        var SomeSuperModel = ModelObject.model('SomeSuperModel');
+
+        var SomeChildModel = SomeSuperModel.model('SomeChildModel', function() {
+            this.has('anotherProperty', Number);
+        });
+
+        SomeSuperModel.has('aProperty', String);
+
+        var someModel = new SomeChildModel();
+
+        var properties = someModel.getProperties();
+        assert.equal(properties.length, 2);
+        assert.equal(someModel.getProperty('aProperty').singleType, String);
+        assert.equal(someModel.getProperty('anotherProperty').singleType, Number);
+
+        assert.end();
+    });
+
+    test(thing('should late inherit supertype properties'), function t(assert) {
+        var SomeSuperModel = ModelObject.model('SomeSuperModel', function() {
+            this.has('aProperty', String);
+        });
+
+        var SomeChildModel = ModelObject.model('SomeChildModel', function() {
+            this.has('anotherProperty', Number);
+        });
+
+        var properties = new SomeChildModel().getProperties();
+        assert.equal(properties.length, 1);
+
+        SomeChildModel.inherit(SomeSuperModel);
+
+        properties = new SomeChildModel().getProperties();
+        assert.equal(properties.length, 2);
+
+        var someModel = new SomeChildModel();
         assert.equal(someModel.getProperty('aProperty').singleType, String);
         assert.equal(someModel.getProperty('anotherProperty').singleType, Number);
 
@@ -306,20 +342,16 @@ describe(method('has'), 'when defining primitive model properties', function(thi
 
         person.bestFriend = bestFriend;
 
-        bestFriend.getParentRelationships(function(err, parentRelationships) {
-            assert.ifError(err);
-            assert.equal(parentRelationships.length, 1);
-            assert.equal(parentRelationships[0].parent, person);
-            assert.equal(parentRelationships[0].key, 'bestFriend');
+        var parentRelationships = bestFriend.getParentRelationships();
+        assert.equal(parentRelationships.length, 1);
+        assert.equal(parentRelationships[0].parent, person);
+        assert.equal(parentRelationships[0].key, 'bestFriend');
 
-            person.bestFriend = null;
+        person.bestFriend = null;
 
-            bestFriend.getParentRelationships(function(err, newParentRelationships) {
-                assert.ifError(err);
-                assert.equal(newParentRelationships.length, 0);
-                assert.end();
-            });
-        });
+        var newParentRelationships = bestFriend.getParentRelationships();
+        assert.equal(newParentRelationships.length, 0);
+        assert.end();
     });
 
 });
@@ -619,7 +651,7 @@ describe(method('setScope'), 'when setting scope', function(thing) {
         });
     });
 
-    test(thing('should not perform routine when scope does not differ'), function t(assert) {
+    test(thing('should return error when scope does not differ'), function t(assert) {
         var scope = new Scope({name: 'TestScope'});
 
         var someModel = new (ModelObject.model('SomeModel', function() {
@@ -632,8 +664,8 @@ describe(method('setScope'), 'when setting scope', function(thing) {
         someModel.setScope(scope, function(err) {
             assert.ifError(err);
             someModel.setScope(scope, function(err) { 
-                assert.ifError(err);
-                assert.ok(spy.calledOnce);
+                assert.ok(err);
+                assert.equal(/already set to the scope specified/.test(err.message), true);
                 assert.end();
             });
         });
@@ -800,12 +832,10 @@ describe(method('getParentRelationships'), 'when getting a child\'s parents', fu
         var person = new Person();
         person.name = 'Alex';
 
-        person.getParentRelationships(function(err, parentRelationships) {
-            assert.ifError(err);
-            assert.equal(parentRelationships instanceof Array, true);
-            assert.equal(parentRelationships.length, 0);
-            assert.end();
-        });
+        var parentRelationships = person.getParentRelationships();
+        assert.equal(parentRelationships instanceof Array, true);
+        assert.equal(parentRelationships.length, 0);
+        assert.end();
     });
 
     test(thing('should callback with unique set of parent and keys and remove correctly'), function t(assert) {
@@ -834,31 +864,26 @@ describe(method('getParentRelationships'), 'when getting a child\'s parents', fu
         otherRider.name = 'Jo';
         otherRider.currentDriver = driver;
 
-        driver.getParentRelationships(function(err, parentRelationships) {
-            assert.ifError(err);
+        var parentRelationships = driver.getParentRelationships();
+        assert.ok(_.isEqual([
+            rider, 
+            rider, 
+            otherRider
+        ], _.pluck(parentRelationships, 'parent')));
 
-            assert.ok(_.isEqual([
-                rider, 
-                rider, 
-                otherRider
-            ], _.pluck(parentRelationships, 'parent')));
+        assert.ok(_.isEqual([
+            'currentDriver', 
+            'lastThreeDrivers', 
+            'currentDriver'
+        ], _.pluck(parentRelationships, 'key')));
 
-            assert.ok(_.isEqual([
-                'currentDriver', 
-                'lastThreeDrivers', 
-                'currentDriver'
-            ], _.pluck(parentRelationships, 'key')));
+        rider.currentDriver = null;
+        rider.lastThreeDrivers = [otherDriver];
 
-            rider.currentDriver = null;
-            rider.lastThreeDrivers = [otherDriver];
-
-            driver.getParentRelationships(function(err, newParentRelationships) {
-                assert.ifError(err);
-                assert.ok(_.isEqual([otherRider], _.pluck(parentRelationships, 'parent')));
-                assert.ok(_.isEqual(['currentDriver'], _.pluck(parentRelationships, 'key')));
-                assert.end();
-            });
-        });
+        var newParentRelationships = driver.getParentRelationships();
+        assert.ok(_.isEqual([otherRider], _.pluck(newParentRelationships, 'parent')));
+        assert.ok(_.isEqual(['currentDriver'], _.pluck(newParentRelationships, 'key')));
+        assert.end();
     });
 
 });

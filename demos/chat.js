@@ -1,5 +1,5 @@
 //
-// index.js
+// chat.js
 // Jetstream
 // 
 // Copyright (c) 2014 Uber Technologies, Inc.
@@ -22,9 +22,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-require('./enumeration');
-require('./json_reader');
-require('./message/abstract_network_message');
-require('./message/network_message_parser');
-require('./model_object');
-require('./scope');
+var createModel = require('../').model;
+
+var User = createModel('User', function() {
+    this.has('username', String);
+    this.has('color', Number);
+    this.has('lastActive', Date);
+});
+
+var Message = createModel('Message', function() {
+    this.has('author', User);
+    this.has('postedAt', Date);
+    this.has('text', String);
+});
+
+var ChatRoom = createModel('ChatRoom', function() {
+    this.has('name', String);
+    this.has('users', User);
+    this.has('messages', Message);
+});
+
+module.exports = {
+    User: User,
+    Message: Message,
+    ChatRoom: ChatRoom
+};

@@ -45,8 +45,8 @@ module.exports = function(grunt) {
                 exec: './node_modules/.bin/opn ./coverage/index.html'
             },
 
-            'demo-shapes': {
-                exec: './node_modules/.bin/nodemon demos/shapes/app.js'
+            'demo': {
+                exec: './node_modules/.bin/nodemon demos/app.js'
             }
         },
 

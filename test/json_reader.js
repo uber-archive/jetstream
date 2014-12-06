@@ -24,7 +24,7 @@
 
 var createTestContext = require('./test/test_context');
 var JSONReader = require('../lib/json_reader');
-var test = require('cached-tape');
+var test = require('redtape')();
 var underscore = require('underscore');
 
 var context = createTestContext('JSONReader');

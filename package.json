@@ -24,7 +24,7 @@
     "test": "cached-tape test/index.js | tap-spec",
     "test-cover": "istanbul cover cached-tape -- test/index.js",
     "view-cover": "istanbul report html && open ./coverage/index.html",
-    "start": "node demos/shapes/app.js"
+    "start": "node demos/app.js"
   },
   "dependencies": {
     "async": "^0.9.0",
@@ -35,6 +35,7 @@
     "lodash": "^2.4.1",
     "maybe-callback": "^1.0.0",
     "node-uuid": "^1.4.1",
+    "replr": "^0.2.4",
     "robb": "^0.2.1",
     "semver": "^4.0.0",
     "winston": "^0.7.3",
@@ -50,9 +51,9 @@
     "mocha": "^1.21.4",
     "nodemon": "^1.2.1",
     "opn": "^1.0.0",
+    "redtape": "^1.0.0",
     "sinon": "^1.10.3",
     "tap-spec": "^1.0.0",
-    "tape": "^3.0.0",
     "underscore": "^1.6.0"
   },
   "bugs": {

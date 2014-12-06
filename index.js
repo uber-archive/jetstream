@@ -23,9 +23,12 @@
 // THE SOFTWARE.
 
 var _ = require('lodash');
+var Enumeration = require('./lib/enumeration');
 var ModelObject = require('./lib/model_object');
+var Repl = require('./lib/repl');
 var Scope = require('./lib/scope');
 var Server = require('./lib/server');
+var StorageMiddleware = require('./lib/middleware/storage/storage_middleware');
 
 // Framework server constructor helper
 module.exports = function(options) {
@@ -36,6 +39,10 @@ module.exports = function(options) {
 
 module.exports = _.extend(module.exports, {
     // Framework methods
+    enumeration: function(name, type, values) {
+        return Enumeration.type(name, type, values);
+    },
+
     model: function(name, definition) {
         return ModelObject.model(name, definition);
     },
@@ -44,12 +51,20 @@ module.exports = _.extend(module.exports, {
         return new Scope(options);
     },
 
+    storage: function(options) {
+        return new StorageMiddleware(options);
+    },
+
+    enableRepl: function(options) {
+        Repl.enable(options);
+    },
+
     // Classes
     middleware: {
         persist: {
             Memory: require('./lib/middleware/persist/memory_persist_middleware')
         },
-        Storage: require('./lib/middleware/storage/storage_middleware')
+        Storage: StorageMiddleware
     },
 
     transport: {
