@@ -38,8 +38,8 @@ var Message = createModel('Message', function() {
 
 var ChatRoom = createModel('ChatRoom', function() {
     this.has('name', String);
-    this.has('users', User);
-    this.has('messages', Message);
+    this.has('users', [User]);
+    this.has('messages', [Message]);
 });
 
 module.exports = {
