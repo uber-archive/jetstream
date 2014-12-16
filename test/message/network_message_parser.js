@@ -87,7 +87,7 @@ describe(method('parseAsJSON'), 'when reading JSON', function(thing) {
         ];
         NetworkMessageParser.parseAsJSON(json, function(err, messages) {
             assert.ifError(err);
-            assert.equal(messages instanceof Array, true);
+            assert.equal(Array.isArray(messages), true);
             assert.equal(messages.length, 2);
             messages.forEach(function(message) {
                 assert.equal(message instanceof ReplyMessage, true);
@@ -166,7 +166,7 @@ describe(method('composeAsJSON'), 'when creating JSON', function(thing) {
         NetworkMessageParser.composeAsJSON(messages, function(err, json) {
             assert.ifError(err);
             assert.ok(json);
-            assert.equal(json instanceof Array, true);
+            assert.equal(Array.isArray(json), true);
 
             messages.forEach(function (message, i) {
                 assert.equal(message instanceof ReplyMessage, true);
