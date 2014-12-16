@@ -833,7 +833,7 @@ describe(method('getParentRelationships'), 'when getting a child\'s parents', fu
         person.name = 'Alex';
 
         var parentRelationships = person.getParentRelationships();
-        assert.equal(parentRelationships instanceof Array, true);
+        assert.equal(Array.isArray(parentRelationships), true);
         assert.equal(parentRelationships.length, 0);
         assert.end();
     });
