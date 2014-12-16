@@ -27,4 +27,7 @@ require('./json_reader');
 require('./message/abstract_network_message');
 require('./message/network_message_parser');
 require('./model_object');
+require('./query/key_path_notation');
+require('./query/push_query_operation');
+require('./query/set_query_operation');
 require('./scope');

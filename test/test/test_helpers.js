@@ -1,5 +1,5 @@
 //
-// abstract_network_message.js
+// test_helpers.js
 // Jetstream
 // 
 // Copyright (c) 2014 Uber Technologies, Inc.
@@ -22,39 +22,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-module.exports = AbstractNetworkMessage;
+module.exports = {
+    createTestUser: createTestUser,
+    createTestMesssage: createTestMesssage,
+    createTestChatRoom: createTestChatRoom
+};
 
-var EventEmitter = require('events').EventEmitter;
-var robb = require('robb/src/robb');
-var util = require('util');
+var ChatRoom = require('../../demos/chat').ChatRoom;
+var Message = require('../../demos/chat').Message;
+var User = require('../../demos/chat').User;
 
-function AbstractNetworkMessage(options) {
-    options = options || {};
-
-    if (!robb.isUnsignedInt(options.index)) {
-        throw new Error('Message requires to be reliably sent with an index');
-    }
-
-    this.index = options.index;
-
-    if (typeof options.replyCallback === 'function') {
-        this.replyCallback = options.replyCallback;
-    } else {
-        this.replyCallback = null;
-    }
+var userCount = 0;
+function createTestUser() {
+    var user = new User();
+    user.username = 'chatmonster' + (++userCount);
+    user.lastActive = new Date();
+    return user;
 }
 
-util.inherits(AbstractNetworkMessage, EventEmitter);
+var texts = ['Rarr', 'Hungry', 'Where are the cookies'];
+function createTestMesssage(author) {
+    var message = new Message();
+    message.author = author;
+    message.postedAt = new Date();
+    message.text = texts[Math.floor((Math.random() * 3) + 1)];
+    return message;
+}
 
-AbstractNetworkMessage.type = 'Abstract';
+function createTestChatRoom() {
+    var user = createTestUser();
 
-AbstractNetworkMessage.prototype.toJSON = function() {
-    var type = Object.getPrototypeOf(this).constructor.type;
-    if (type === AbstractNetworkMessage.type) {
-        throw new Error('Cannot call toJSON on an AbstractNetworkMessage');
-    }
-    return {
-        type: type,
-        index: this.index
-    };
-};
+    var chatRoom = new ChatRoom();
+    chatRoom.name = 'TestChatRoom';
+    chatRoom.users = [user];
+    chatRoom.messages = [createTestMesssage(user)];
+    return chatRoom;
+}
