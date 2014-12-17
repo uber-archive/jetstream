@@ -26,6 +26,7 @@ var _ = require('lodash');
 var Enumeration = require('./lib/enumeration');
 var ModelObject = require('./lib/model_object');
 var Repl = require('./lib/repl');
+var rustResult = require('rust-result');
 var Scope = require('./lib/scope');
 var Server = require('./lib/server');
 var StorageMiddleware = require('./lib/middleware/storage/storage_middleware');
@@ -77,5 +78,10 @@ module.exports = _.extend(module.exports, {
     Scope: Scope,
 
     // Shared instances
-    logger: require('./lib/logger')
+    logger: require('./lib/logger'),
+
+    // For external library to test rust-result values
+    Ok: rustResult.Ok,
+    Err: rustResult.Err,
+    Result: rustResult.Result
 });
