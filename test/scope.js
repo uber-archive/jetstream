@@ -63,6 +63,7 @@ describe(method('applySyncFragments'), 'when removing orphaned objects', functio
             function applyChangeToRemoveSecondShape(nextCallback) {
                 var change = new SyncFragment({
                     type: 'change',
+                    clsName: 'Canvas',
                     uuid: canvas.uuid,
                     properties: {
                         shapes: [shape1.uuid]
@@ -115,6 +116,7 @@ describe(method('applySyncFragments'), 'when removing orphaned objects', functio
             function applyChangeToRemoveSecondShape(nextCallback) {
                 var change = new SyncFragment({
                     type: 'change',
+                    clsName: 'Canvas',
                     uuid: canvas.uuid,
                     properties: {
                         shapes: [shape2.uuid]
