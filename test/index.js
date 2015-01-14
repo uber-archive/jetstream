@@ -2,7 +2,7 @@
 // index.js
 // Jetstream
 // 
-// Copyright (c) 2014 Uber Technologies, Inc.
+// Copyright (c) 2015 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ require('./json_reader');
 require('./message/abstract_network_message');
 require('./message/network_message_parser');
 require('./model_object');
+require('./procedures/remote_http_sync_procedure');
 require('./query/key_path_notation');
 require('./query/push_query_operation');
 require('./query/set_query_operation');

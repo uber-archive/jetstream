@@ -2,7 +2,7 @@
 // query_set_operation.js
 // Jetstream
 // 
-// Copyright (c) 2014 Uber Technologies, Inc.
+// Copyright (c) 2015 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@ var _ = require('lodash');
 var async = require('async');
 var createTestChatRoom = require('../test/test_helpers').createTestChatRoom;
 var createTestContext = require('../test/test_context');
-var createTestMesssage = require('../test/test_helpers').createTestMesssage;
+var createTestMessage = require('../test/test_helpers').createTestMessage;
 var createTestUser = require('../test/test_helpers').createTestUser;
 var PushQueryOperation = require('../../lib/query/push_query_operation');
 var Scope = require('../../lib/scope');
@@ -48,7 +48,7 @@ describe(method('execute'), 'when executing updates', function(thing) {
         room.users = [testAuthor];
 
         // Set messages to contain just a single message first
-        var testExistingMessage = createTestMesssage();
+        var testExistingMessage = createTestMessage();
         room.messages = [testExistingMessage];
 
         async.waterfall([
