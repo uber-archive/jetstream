@@ -22,11 +22,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-var _ = require('lodash');
 var async = require('async');
 var Canvas = require('../demos/shapes').Canvas;
 var createTestContext = require('./test/test_context');
-var ModelObject = require('../lib/model_object');
 var Scope = require('../lib/scope');
 var Shape = require('../demos/shapes').Shape;
 var sinon = require('sinon');

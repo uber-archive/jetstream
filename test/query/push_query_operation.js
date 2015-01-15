@@ -22,15 +22,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-var _ = require('lodash');
 var async = require('async');
 var createTestChatRoom = require('../test/test_helpers').createTestChatRoom;
 var createTestContext = require('../test/test_context');
 var createTestMessage = require('../test/test_helpers').createTestMessage;
 var createTestUser = require('../test/test_helpers').createTestUser;
-var PushQueryOperation = require('../../lib/query/push_query_operation');
 var Scope = require('../../lib/scope');
-var sinon = require('sinon');
 var test = require('redtape')();
 var uuid = require('node-uuid');
 

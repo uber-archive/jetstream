@@ -26,6 +26,10 @@
     "view-cover": "istanbul report html && open ./coverage/index.html",
     "start": "node demos/app.js"
   },
+  "pre-commit": [
+    "jshint",
+    "test"
+  ],
   "dependencies": {
     "async": "^0.9.0",
     "body-parser": "^1.6.5",
@@ -55,6 +59,7 @@
     "mocha": "^1.21.4",
     "nodemon": "^1.2.1",
     "opn": "^1.0.0",
+    "pre-commit": "0.0.9",
     "redtape": "^1.0.0",
     "sinon": "^1.10.3",
     "tap-spec": "^1.0.0",

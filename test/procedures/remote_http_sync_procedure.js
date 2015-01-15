@@ -22,11 +22,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-var _ = require('lodash');
 var async = require('async');
 var createTestChatRoom = require('../test/test_helpers').createTestChatRoom;
 var createTestContext = require('../test/test_context');
-var RemoteHttpSyncProcedure = require('../../lib/procedures/remote_http_sync_procedure');
 var Scope = require('../../lib/scope');
 var sinon = require('sinon');
 var SyncFragment = require('../../lib/sync_fragment');
