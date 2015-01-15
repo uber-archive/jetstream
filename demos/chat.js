@@ -36,8 +36,15 @@ var Message = createModel('Message', function() {
     this.has('text', String);
 });
 
+var ChatRoomAttributes = createModel('ChatRoomAttributes', function() {
+    this.has('topic', String);
+    this.has('tintColor', Number);
+    this.has('locale', String);
+});
+
 var ChatRoom = createModel('ChatRoom', function() {
     this.has('name', String);
+    this.has('attributes', ChatRoomAttributes);
     this.has('users', [User]);
     this.has('messages', [Message]);
 });
@@ -45,5 +52,6 @@ var ChatRoom = createModel('ChatRoom', function() {
 module.exports = {
     User: User,
     Message: Message,
-    ChatRoom: ChatRoom
+    ChatRoom: ChatRoom,
+    ChatRoomAttributes: ChatRoomAttributes
 };

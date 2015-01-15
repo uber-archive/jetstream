@@ -23,11 +23,13 @@
 // THE SOFTWARE.
 
 var ChatRoom = require('../../demos/chat').ChatRoom;
+var ChatRoomAttributes = require('../../demos/chat').ChatRoomAttributes;
 var Message = require('../../demos/chat').Message;
 var User = require('../../demos/chat').User;
 
 module.exports = {
     ChatRoom: ChatRoom,
+    ChatRoomAttributes: ChatRoomAttributes,
     Message: Message,
     User: User,
     createTestUser: createTestUser,
@@ -59,9 +61,13 @@ function createTestMessage(author) {
 
 function createTestChatRoom() {
     var user = createTestUser();
+    var attributes = new ChatRoomAttributes();
+    attributes.topic = 'This is a test chat room';
+    attributes.locale = 'en_US';
 
     var chatRoom = new ChatRoom();
     chatRoom.name = 'TestChatRoom';
+    chatRoom.attributes = attributes;
     chatRoom.users = [user];
     chatRoom.messages = [createTestMessage(user)];
     return chatRoom;
@@ -97,7 +103,8 @@ ChatRoom.defineProcedure('postMessage', {
         },
         method: 'post',
         headers: {
-            'Authorization': expr('$scope.params.accessToken')
+            'Authorization': expr('$scope.params.accessToken'),
+            'X-Locale': expr('$rootModel.attributes.locale')
         },
         body: {
             uuid: expr('$incoming.Message.add.uuid'),

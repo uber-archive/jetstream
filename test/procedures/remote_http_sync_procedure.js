@@ -97,7 +97,8 @@ describe(method('execute'), 'when executing procedures', function(thing) {
 
             assert.deepEqual(options.headers, {
                 'Content-Type': 'application/json',
-                'Authorization': scope.params.accessToken
+                'Authorization': scope.params.accessToken,
+                'X-Locale': 'en_US'
             });
 
             assert.deepEqual(options.json, {
