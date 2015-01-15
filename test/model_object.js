@@ -2,7 +2,7 @@
 // model_object.js
 // Jetstream
 // 
-// Copyright (c) 2014 Uber Technologies, Inc.
+// Copyright (c) 2015 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,12 +28,24 @@ var createTestContext = require('./test/test_context');
 var ModelObject = require('../lib/model_object');
 var Scope = require('../lib/scope');
 var sinon = require('sinon');
-var test = require('redtape')();
+var redtape = require('redtape');
 var uuid = require('node-uuid');
 
 var context = createTestContext('ModelObject');
 var describe = context.describe;
 var method = context.method;
+
+var sandbox;
+var test = redtape({
+    beforeEach: function(callback) {
+        sandbox = sinon.sandbox.create();
+        callback();
+    },
+    afterEach: function(callback) {
+        sandbox.restore();
+        callback();
+    }
+});
 
 describe(method('model'), 'when defining a model', function(thing) {
 
@@ -712,7 +724,6 @@ describe(method('setIsScopeRoot'), 'when setting as scope root', function(thing)
             this.has('name', String);
         }))();
 
-        var sandbox = sinon.sandbox.create();
         var spy = sandbox.spy(someModel, 'setScope');
 
         someModel.setIsScopeRoot(true, function(err) {
@@ -726,7 +737,6 @@ describe(method('setIsScopeRoot'), 'when setting as scope root', function(thing)
                 assert.equal(someModel.isScopeRoot, true);
                 assert.equal(someModel.scope, createdScope);
                 assert.ok(spy.calledOnce);
-                sandbox.restore();
                 assert.end();
             });
         });

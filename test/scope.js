@@ -2,7 +2,7 @@
 // scope.js
 // Jetstream
 // 
-// Copyright (c) 2014 Uber Technologies, Inc.
+// Copyright (c) 2015 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,11 +31,23 @@ var Scope = require('../lib/scope');
 var Shape = require('../demos/shapes').Shape;
 var sinon = require('sinon');
 var SyncFragment = require('../lib/sync_fragment');
-var test = require('redtape')();
+var redtape = require('redtape');
 
 var context = createTestContext('Scope');
 var describe = context.describe;
 var method = context.method;
+
+var sandbox;
+var test = redtape({
+    beforeEach: function(callback) {
+        sandbox = sinon.sandbox.create();
+        callback();
+    },
+    afterEach: function(callback) {
+        sandbox.restore();
+        callback();
+    }
+});
 
 describe(method('applySyncFragments'), 'when removing orphaned objects', function(thing) {
 
@@ -47,7 +59,6 @@ describe(method('applySyncFragments'), 'when removing orphaned objects', functio
         canvas.shapes = [shape1, shape2];
 
         var memoryPersist = scope.persist;
-        var sandbox = sinon.sandbox.create();
         var removeModelObjectSpy = sandbox.spy(scope, 'removeModelObject');
 
         async.series([
@@ -92,7 +103,6 @@ describe(method('applySyncFragments'), 'when removing orphaned objects', functio
             }
 
         ], function(err) {
-            sandbox.restore();
             assert.ifError(err);
             assert.end();
         });
@@ -105,7 +115,6 @@ describe(method('applySyncFragments'), 'when removing orphaned objects', functio
         var shape2 = new Shape();
         canvas.shapes = [shape1, shape2];
 
-        var sandbox = sinon.sandbox.create();
         var removeModelObjectSpy = sandbox.spy(scope, 'removeModelObject');
 
         async.series([
@@ -136,7 +145,6 @@ describe(method('applySyncFragments'), 'when removing orphaned objects', functio
             }
 
         ], function(err) {
-            sandbox.restore();
             assert.ifError(err);
             assert.end();
         });

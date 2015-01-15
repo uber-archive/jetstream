@@ -2,7 +2,7 @@
 // test_helpers.js
 // Jetstream
 // 
-// Copyright (c) 2014 Uber Technologies, Inc.
+// Copyright (c) 2015 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +22,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-module.exports = {
-    createTestUser: createTestUser,
-    createTestMesssage: createTestMesssage,
-    createTestChatRoom: createTestChatRoom
-};
-
 var ChatRoom = require('../../demos/chat').ChatRoom;
 var Message = require('../../demos/chat').Message;
 var User = require('../../demos/chat').User;
 
+module.exports = {
+    ChatRoom: ChatRoom,
+    Message: Message,
+    User: User,
+    createTestUser: createTestUser,
+    createTestMessage: createTestMessage,
+    createTestChatRoom: createTestChatRoom
+};
+
+var arrayPropertyConstraint = require('../../').arrayPropertyConstraint;
+var expr = require('../../').expr;
+var hasNewValuePropertyConstraint = require('../../').hasNewValuePropertyConstraint;
+
+// Test helper methods
 var userCount = 0;
 function createTestUser() {
     var user = new User();
@@ -41,7 +49,7 @@ function createTestUser() {
 }
 
 var texts = ['Rarr', 'Hungry', 'Where are the cookies'];
-function createTestMesssage(author) {
+function createTestMessage(author) {
     var message = new Message();
     message.author = author;
     message.postedAt = new Date();
@@ -55,6 +63,47 @@ function createTestChatRoom() {
     var chatRoom = new ChatRoom();
     chatRoom.name = 'TestChatRoom';
     chatRoom.users = [user];
-    chatRoom.messages = [createTestMesssage(user)];
+    chatRoom.messages = [createTestMessage(user)];
     return chatRoom;
 }
+
+// Add procedures for procedure testing
+ChatRoom.defineProcedure('postMessage', {
+    constraints: [
+        {
+            type: 'change',
+            clsName: 'ChatRoom',
+            properties: {
+                messages: arrayPropertyConstraint({type: 'insert'})
+            },
+            allowAdditionalProperties: false
+        },
+        {
+            type: 'add',
+            clsName: 'Message',
+            properties: {
+                author: hasNewValuePropertyConstraint(),
+                postedAt: hasNewValuePropertyConstraint(),
+                text: hasNewValuePropertyConstraint()
+            },
+            allowAdditionalProperties: false
+        }
+    ],
+    remote: {
+        type: 'http',
+        url: 'http://chatRoomAPI/room/:chatRoomUUID/messages',
+        params: {
+            chatRoomUUID: expr('$incoming.ChatRoom.change.uuid')
+        },
+        method: 'post',
+        headers: {
+            'Authorization': expr('$scope.params.accessToken')
+        },
+        body: {
+            uuid: expr('$incoming.Message.add.uuid'),
+            authorUUID: expr('$incoming.Message.add.author'),
+            postedAt: expr('$incoming.Message.add.postedAt'),
+            text: expr('$incoming.Message.add.text')
+        }
+    }
+});

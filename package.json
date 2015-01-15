@@ -21,8 +21,8 @@
   ],
   "scripts": {
     "jshint": "jshint --verbose .",
-    "test": "cached-tape test/index.js | tap-spec",
-    "test-cover": "istanbul cover cached-tape -- test/index.js",
+    "test": "tape test/index.js | tap-spec",
+    "test-cover": "istanbul cover tape -- test/index.js",
     "view-cover": "istanbul report html && open ./coverage/index.html",
     "start": "node demos/app.js"
   },
@@ -32,12 +32,14 @@
     "callback-or-emit-error": "^1.0.1",
     "debug": "^1.0.4",
     "deepequal": "0.0.1",
+    "dotty": "0.0.2",
     "error": "^4.3.0",
     "express": "^4.8.5",
     "lodash": "^2.4.1",
     "maybe-callback": "^1.0.0",
     "node-uuid": "^1.4.1",
     "replr": "^0.2.4",
+    "request": "^2.51.0",
     "robb": "^0.2.1",
     "rust-result": "^0.1.0",
     "semver": "^4.0.0",
@@ -45,7 +47,6 @@
     "ws": "^0.4.32"
   },
   "devDependencies": {
-    "cached-tape": "^2.0.0",
     "chai": "^1.9.1",
     "grunt": "^0.4.5",
     "grunt-contrib-watch": "^0.6.1",
@@ -57,6 +58,7 @@
     "redtape": "^1.0.0",
     "sinon": "^1.10.3",
     "tap-spec": "^1.0.0",
+    "tape": "^3.0.3",
     "underscore": "^1.6.0"
   },
   "bugs": {
