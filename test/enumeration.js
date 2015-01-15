@@ -22,7 +22,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-var _ = require('lodash');
 var createTestContext = require('./test/test_context');
 var Enumeration = require('../lib/enumeration');
 var test = require('redtape')();

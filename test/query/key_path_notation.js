@@ -22,7 +22,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-var _ = require('lodash');
 var createTestContext = require('../test/test_context');
 var Err = require('rust-result').Err;
 var KeyPathNotation = require('../../lib/query/key_path_notation');
@@ -51,7 +50,7 @@ var DerivedKeyPathTest = ModelObject.model('DerivedKeyPathTest', function() {
     this.has('date', Date);
 });
 
-var ConflictingDerivedKeyPathTest = ModelObject.model('ConflictingDerivedKeyPathTest', function() {
+ModelObject.model('ConflictingDerivedKeyPathTest', function() {
     this.inherit(KeyPathTest);
     this.has('date', Date);
 });
@@ -122,7 +121,7 @@ describe(method('resolveModelObject'), 'when resolving key paths', function(thin
         t1.single.derived.single = t1;
 
         var result = KeyPathNotation.resolveModelObject(t1, 'single.derived.single');
-        assert.equal(Ok(result), t1)
+        assert.equal(Ok(result), t1);
 
         assert.end();
     });
