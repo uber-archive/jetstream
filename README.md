@@ -7,8 +7,7 @@ Jetstream for Node is a server that brokers syncing Jetstream models over the Je
 - [ ] Transactional application of changesets
 - [ ] Synchronize and validate changesets with downstream services
 - [x] Modular architecture
-- [x] Comprehensive Unit Test Coverage
-- [x] Complete Documentation
+- [x] ~~Comprehensive Unit~~ Test Coverage
 
 ## Communication
 
