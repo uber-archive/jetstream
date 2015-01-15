@@ -15,7 +15,7 @@
     "regexp": false,
     "undef": true,
     "unused": "vars",
-    "strict": false,
+    "strict": true,
     "loopfunc": true,
     "trailing": true,
     "node": true,
