@@ -30,11 +30,11 @@ module.exports = function(grunt) {
 
         run: {
             test: {
-                exec: './node_modules/.bin/cached-tape test/index.js | ./node_modules/.bin/tap-spec'
+                exec: './node_modules/.bin/tape test/index.js | ./node_modules/.bin/tap-spec'
             },
 
             'test-cover': {
-                exec: './node_modules/.bin/istanbul cover ./node_modules/.bin/cached-tape test/index.js'
+                exec: './node_modules/.bin/istanbul cover ./node_modules/.bin/tape test/index.js'
             },
 
             'report-cover': {
@@ -69,7 +69,7 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['run:test']);
     grunt.registerTask('test:file', function(file) {
         var done = this.async();
-        var cmd = './node_modules/.bin/cached-tape ' + file + ' | ./node_modules/.bin/tap-spec';
+        var cmd = './node_modules/.bin/tape ' + file + ' | ./node_modules/.bin/tap-spec';
         exec(cmd, function(err, stdout, stderr) {
             if (stdout) {
                 process.stdout.write(stdout);

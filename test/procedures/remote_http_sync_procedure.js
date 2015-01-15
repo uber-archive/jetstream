@@ -31,12 +31,24 @@ var Scope = require('../../lib/scope');
 var sinon = require('sinon');
 var SyncFragment = require('../../lib/sync_fragment');
 var SyncProcedureResult = require('../../lib/procedures/sync_procedure_result');
-var test = require('redtape')();
+var redtape = require('redtape');
 var uuid = require('node-uuid');
 
 var context = createTestContext('RemoteHttpSyncProcedure');
 var describe = context.describe;
 var method = context.method;
+
+var sandbox;
+var test = redtape({
+    beforeEach: function(callback) {
+        sandbox = sinon.sandbox.create();
+        callback();
+    },
+    afterEach: function(callback) {
+        sandbox.restore();
+        callback();
+    }
+});
 
 describe(method('execute'), 'when executing procedures', function(thing) {
 
@@ -76,7 +88,6 @@ describe(method('execute'), 'when executing procedures', function(thing) {
         var accessToken = uuid.v4();
         var scope = new Scope({name: 'TestScope', params: {accessToken: accessToken}});
 
-        var sandbox = sinon.sandbox.create();
         var procedure = chatRoom.getProcedure('postMessage');
         assert.ok(procedure);
         sandbox.stub(procedure, 'httpClient', mockHttpClient);
