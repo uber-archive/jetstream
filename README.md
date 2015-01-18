@@ -1,8 +1,8 @@
 ![Jetstream](https://raw.githubusercontent.com/uber/jetstream/assets/jetstream.png)
 
-Jetstream for Node is a server that brokers syncing Jetstream models over the Jetstream Sync protocol. Out of the box it has a single Websocket transport adapter with the ability to add custom transport adapters.
-
 [![Build Status](https://img.shields.io/travis/uber/jetstream.svg?style=flat)](https://travis-ci.org/uber/jetstream)
+
+Jetstream for Node is a server that brokers syncing Jetstream models over the Jetstream Sync protocol. Out of the box it has a single Websocket transport adapter with the ability to add custom transport adapters.
 
 ## Features
 
