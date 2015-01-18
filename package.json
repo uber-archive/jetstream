@@ -22,8 +22,9 @@
   "scripts": {
     "jshint": "jshint --verbose .",
     "test": "tape test/index.js | tap-spec",
-    "test-cover": "istanbul cover tape -- test/index.js",
+    "test-cover": "istanbul cover tape -- test/index.js | tap-spec",
     "view-cover": "istanbul report html && open ./coverage/index.html",
+    "test-coveralls": "istanbul cover tape --report lcovonly -- test/index.js | tap-spec && cat ./coverage/lcov.info | coveralls",
     "start": "node demos/app.js"
   },
   "pre-commit": [
@@ -52,6 +53,7 @@
   },
   "devDependencies": {
     "chai": "^1.9.1",
+    "coveralls": "^2.11.2",
     "grunt": "^0.4.5",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-run": "^0.2.4",
