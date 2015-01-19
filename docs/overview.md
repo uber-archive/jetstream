@@ -163,17 +163,17 @@ type Session : {
     "fetch": (ScopeFetch) => void
 }>
 
--- The ConnectionMessage type represents all the possible
+-- The NetworkMessage type represents all the possible
 --      messages that can be send down the connection.
 -- It basically builds up the grammar for the protocol. The
 --      client <-> server protocol consists of these message
 --      types.
-type ConnectionMessage : Object
+type NetworkMessage : Object
 
 -- A connection will emit one of the many "message" types that
 --      can flow through the connection
 type Connection : EventEmitter<{
-    "message": (ConnectionMessage) => void,
+    "message": (NetworkMessage) => void,
 
     accept: () => void,
     deny: () => void

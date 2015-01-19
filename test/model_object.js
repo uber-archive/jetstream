@@ -664,26 +664,6 @@ describe(method('setScope'), 'when setting scope', function(thing) {
         });
     });
 
-    test(thing('should return error when scope does not differ'), function t(assert) {
-        var scope = new Scope({name: 'TestScope'});
-
-        var someModel = new (ModelObject.model('SomeModel', function() {
-            this.has('name', String);
-        }))();
-
-        var spy = sinon.spy();
-        someModel.on('scope', spy);
-
-        someModel.setScope(scope, function(err) {
-            assert.ifError(err);
-            someModel.setScope(scope, function(err) { 
-                assert.ok(err);
-                assert.equal(/already set to the scope specified/.test(err.message), true);
-                assert.end();
-            });
-        });
-    });
-
 });
 
 describe(method('setIsScopeRoot'), 'when setting as scope root', function(thing) {
