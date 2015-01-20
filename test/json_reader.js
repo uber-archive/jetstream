@@ -24,7 +24,7 @@
 'use strict';
 
 var createTestContext = require('./test/test_context');
-var JSONReader = require('../lib/json_reader');
+var JSONReader = require('../lib/message/json_reader');
 var test = require('redtape')();
 var underscore = require('underscore');
 

@@ -34,11 +34,11 @@ var context = createTestContext('NetworkMessageParser');
 var describe = context.describe;
 var method = context.method;
 
-describe(method('parseAsRaw'), 'when reading input', function(thing) {
+describe(method('parseAsRawJSON'), 'when reading input', function(thing) {
 
     test(thing('should callback with error if reading fails'), function t(assert) {
         var input = 'bah-humbug';
-        NetworkMessageParser.parseAsRaw(input, function(err, message) {
+        NetworkMessageParser.parseAsRawJSON(input, function(err, message) {
             assert.ok(err);
             assert.notOk(message);
             assert.end();
@@ -47,7 +47,7 @@ describe(method('parseAsRaw'), 'when reading input', function(thing) {
 
     test(thing('should parse a ReplyMessage as string'), function t(assert) {
         var input = '{"type": "Reply", "replyTo": 1, "index": 1}';
-        NetworkMessageParser.parseAsRaw(input, function(err, message) {
+        NetworkMessageParser.parseAsRawJSON(input, function(err, message) {
             assert.ifError(err);
             assert.equal(message instanceof ReplyMessage, true);
             assert.end();
