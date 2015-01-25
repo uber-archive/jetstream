@@ -25,11 +25,14 @@
     "test-cover": "istanbul cover tape -- test/index.js | tap-spec",
     "view-cover": "istanbul report html && open ./coverage/index.html",
     "test-coveralls": "istanbul cover tape --report lcovonly -- test/index.js | tap-spec && cat ./coverage/lcov.info | coveralls",
-    "start": "node demos/app.js"
+    "start": "node demos/app.js",
+    "check-licence": "uber-licence --dry",
+    "add-licence": "uber-licence"
   },
   "pre-commit": [
     "jshint",
-    "test"
+    "test",
+    "check-licence"
   ],
   "dependencies": {
     "async": "^0.9.0",
@@ -61,12 +64,14 @@
     "jshint": "^2.5.11",
     "mocha": "^1.21.4",
     "nodemon": "^1.2.1",
+    "open": "0.0.5",
     "opn": "^1.0.0",
     "pre-commit": "0.0.9",
     "redtape": "^1.0.0",
     "sinon": "^1.10.3",
     "tap-spec": "^1.0.0",
     "tape": "^3.0.3",
+    "uber-licence": "^1.1.0",
     "underscore": "^1.6.0"
   },
   "bugs": {
