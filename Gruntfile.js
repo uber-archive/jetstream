@@ -31,7 +31,7 @@ module.exports = function(grunt) {
             },
 
             'test-cover': {
-                exec: './node_modules/.bin/istanbul cover ./node_modules/.bin/tape test/index.js'
+                exec: './node_modules/.bin/istanbul cover ./node_modules/.bin/tape test/index.js | ./node_modules/.bin/tap-spec'
             },
 
             'report-cover': {
@@ -40,10 +40,6 @@ module.exports = function(grunt) {
 
             'open-cover': {
                 exec: './node_modules/.bin/opn ./coverage/index.html'
-            },
-
-            'demo': {
-                exec: './node_modules/.bin/nodemon demos/app.js'
             }
         },
 
@@ -62,25 +58,6 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-run');
     grunt.loadNpmTasks('grunt-contrib-watch');
-
-    grunt.registerTask('test', ['run:test']);
-    grunt.registerTask('test:file', function(file) {
-        var done = this.async();
-        var cmd = './node_modules/.bin/tape ' + file + ' | ./node_modules/.bin/tap-spec';
-        exec(cmd, function(err, stdout, stderr) {
-            if (stdout) {
-                process.stdout.write(stdout);
-            }
-            if (stderr) {
-                process.stderr.write(stderr);
-            }
-            if (err) {
-                done(false);
-            } else {
-                done();
-            }
-        });
-    });
 
     grunt.registerTask('devtest', [
         'run:test',
