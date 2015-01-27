@@ -19,6 +19,7 @@
 // THE SOFTWARE.
 'use strict';
 
+
 var async = require('async');
 var createTestChatRoom = require('../test/test_helpers').createTestChatRoom;
 var createTestContext = require('../test/test_context');
@@ -26,19 +27,18 @@ var createTestMessage = require('../test/test_helpers').createTestMessage;
 var createTestUser = require('../test/test_helpers').createTestUser;
 var Scope = require('../../lib/scope');
 var test = require('redtape')();
-var uuid = require('node-uuid');
 
-var context = createTestContext('PushQueryOperation');
+var context = createTestContext('PullQueryOperation');
 var describe = context.describe;
 var method = context.method;
 
 describe(method('execute'), 'when executing updates', function(thing) {
 
-    test(thing('should be able to perform simple push'), function t(assert) {
+    test(thing('should be able to perform simple pull'), function t(assert) {
         var room = createTestChatRoom();
 
         var testAuthor = createTestUser();
-        testAuthor.username = 'PushQueryTestUser';
+        testAuthor.username = 'PullQueryTestUser';
         room.users = [testAuthor];
 
         // Set messages to contain just a single message first
@@ -55,31 +55,22 @@ describe(method('execute'), 'when executing updates', function(thing) {
 
             function executeUpdate(scope, nextCallback) {
                 scope.update({}, {
-                    $push: {
+                    $pull: {
                         messages: {
-                            $uuid: uuid.v4(),
-                            author: testAuthor.uuid,
-                            postedAt: new Date(),
-                            text: 'A new message'
+                            $uuid: testExistingMessage.uuid
                         }
                     }
                 }, nextCallback);
             },
 
             function verifyQueryResult(result, nextCallback) {
-                assert.equal(room.messages.length, 2);
-
-                assert.equal(room.messages.objectAtIndex(1).author, testAuthor);
-                assert.equal(room.messages.objectAtIndex(1).postedAt instanceof Date, true);
-                assert.equal(room.messages.objectAtIndex(1).text, 'A new message');
+                assert.equal(room.messages.length, 0);
 
                 assert.equal(result.matched.length, 1);
                 assert.equal(result.matched[0].uuid, room.uuid);
                 assert.equal(result.matched[0].clsName, room.typeName);
 
-                assert.equal(result.created.length, 1);
-                assert.equal(result.created[0].uuid, room.messages.objectAtIndex(1).uuid);
-                assert.equal(result.created[0].clsName, 'Message');
+                assert.equal(result.created.length, 0);
 
                 assert.equal(result.modified.length, 1);
                 assert.equal(result.modified[0].uuid, room.uuid);

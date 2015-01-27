@@ -35,6 +35,7 @@ require('./message/session_create_reply_message');
 require('./model_object');
 require('./procedures/remote_http_sync_procedure');
 require('./query/key_path_notation');
+require('./query/pull_query_operation');
 require('./query/push_query_operation');
 require('./query/set_query_operation');
 require('./scope');
