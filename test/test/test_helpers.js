@@ -107,7 +107,8 @@ ChatRoom.defineProcedure('postMessage', {
             uuid: expr('$incoming.Message.add.uuid'),
             authorUUID: expr('$incoming.Message.add.author'),
             postedAt: expr('$incoming.Message.add.postedAt'),
-            text: expr('$incoming.Message.add.text')
+            text: expr('$incoming.Message.add.text'),
+            tags: ['san_francisco', 'nodejs']
         }
     }
 });

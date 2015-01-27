@@ -102,7 +102,8 @@ describe(method('execute'), 'when executing procedures', function(thing) {
                 uuid: newMessageUUID,
                 authorUUID: user.uuid,
                 postedAt: newMessagePostedAt,
-                text: newMessageText
+                text: newMessageText,
+                tags: ['san_francisco', 'nodejs']
             });
 
             callback(null, {statusCode: 200}, '{"posted": true}');
