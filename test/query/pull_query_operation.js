@@ -27,7 +27,6 @@ var createTestMessage = require('../test/test_helpers').createTestMessage;
 var createTestUser = require('../test/test_helpers').createTestUser;
 var Scope = require('../../lib/scope');
 var test = require('redtape')();
-var uuid = require('node-uuid');
 
 var context = createTestContext('PullQueryOperation');
 var describe = context.describe;
