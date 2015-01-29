@@ -95,7 +95,8 @@ describe(method('execute'), 'when executing procedures', function(thing) {
             assert.deepEqual(options.headers, {
                 'Content-Type': 'application/json',
                 'Authorization': scope.params.accessToken,
-                'X-Locale': 'en_US'
+                'X-ChatRoom-Locale': 'en_US',
+                'X-ChatRoom-LastMessageId': newMessageUUID
             });
 
             assert.deepEqual(options.json, {
@@ -103,7 +104,7 @@ describe(method('execute'), 'when executing procedures', function(thing) {
                 authorUUID: user.uuid,
                 postedAt: newMessagePostedAt,
                 text: newMessageText,
-                tags: ['san_francisco', 'nodejs']
+                tags: ['staticValue0', 'staticValue1']
             });
 
             callback(null, {statusCode: 200}, '{"posted": true}');

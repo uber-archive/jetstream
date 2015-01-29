@@ -101,14 +101,15 @@ ChatRoom.defineProcedure('postMessage', {
         method: 'post',
         headers: {
             'Authorization': expr('$scope.params.accessToken'),
-            'X-Locale': expr('$rootModel.attributes.locale')
+            'X-ChatRoom-Locale': expr('$rootModel.attributes.locale'),
+            'X-ChatRoom-LastMessageId': expr('$incoming.ChatRoom.change.messages[-1]')
         },
         body: {
             uuid: expr('$incoming.Message.add.uuid'),
             authorUUID: expr('$incoming.Message.add.author'),
             postedAt: expr('$incoming.Message.add.postedAt'),
             text: expr('$incoming.Message.add.text'),
-            tags: ['san_francisco', 'nodejs']
+            tags: ['staticValue0', 'staticValue1']
         }
     }
 });
