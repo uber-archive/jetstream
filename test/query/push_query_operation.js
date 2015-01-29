@@ -94,4 +94,51 @@ describe(method('execute'), 'when executing updates', function(thing) {
         });
     });
 
+    test(thing('should not be able to push a "new" ModelObject with an existing UUID'), function t(assert) {
+        var room = createTestChatRoom();
+
+        var testAuthor = createTestUser();
+        testAuthor.username = 'PushQueryTestUser';
+        room.users = [testAuthor];
+
+        // Set messages to contain just a single message first
+        var testExistingMessage = createTestMessage();
+        room.messages = [testExistingMessage];
+
+        async.waterfall([
+            function setRoot(nextCallback) {
+                var scope = new Scope({name: 'ChatRoomScope'});
+                scope.setRoot(room, function(err) {
+                    nextCallback(err, scope);
+                });
+            },
+
+            function executeUpdate(scope, nextCallback) {
+                scope.update({}, {
+                    $push: {
+                        messages: {
+                            $uuid: testExistingMessage.uuid,
+                            author: testAuthor.uuid,
+                            postedAt: new Date(),
+                            text: 'Overwrite message'
+                        }
+                    }
+                }, nextCallback);
+            },
+
+            function verifyQueryResult(result, nextCallback) {
+                assert.equal(result.writeErrors.length, 1);
+
+                assert.ok(new RegExp(testExistingMessage.uuid).test(result.writeErrors[0].message));
+                assert.ok(/already exists/.test(result.writeErrors[0].message));
+
+                nextCallback();
+            }
+
+        ], function(err) {
+            assert.ifError(err);
+            assert.end();
+        });
+    });
+
 });
