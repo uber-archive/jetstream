@@ -101,7 +101,6 @@ describe(method('execute'), 'when executing updates', function(thing) {
         testAuthor.username = 'PushQueryTestUser';
         room.users = [testAuthor];
 
-        // Set messages to contain just a single message first
         var testExistingMessage = createTestMessage();
         room.messages = [testExistingMessage];
 
@@ -126,12 +125,10 @@ describe(method('execute'), 'when executing updates', function(thing) {
 
                 assert.equal(room.messages.objectAtIndex(0).uuid, testExistingMessage.uuid);
                 assert.equal(room.messages.objectAtIndex(0).author, testExistingMessage.author);
-                assert.equal(room.messages.objectAtIndex(0).postedAt instanceof Date, true);
                 assert.equal(room.messages.objectAtIndex(0).text, testExistingMessage.text);
 
-                assert.equal(room.messages.objectAtIndex(0).uuid, testExistingMessage.uuid);
+                assert.equal(room.messages.objectAtIndex(1).uuid, testExistingMessage.uuid);
                 assert.equal(room.messages.objectAtIndex(1).author, testExistingMessage.author);
-                assert.equal(room.messages.objectAtIndex(1).postedAt instanceof Date, true);
                 assert.equal(room.messages.objectAtIndex(1).text, testExistingMessage.text);
 
                 assert.equal(result.matched.length, 1);
