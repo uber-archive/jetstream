@@ -94,4 +94,109 @@ describe(method('execute'), 'when executing updates', function(thing) {
         });
     });
 
+    test(thing('should be able to push an existing ModelObject by just UUID'), function t(assert) {
+        var room = createTestChatRoom();
+
+        var testAuthor = createTestUser();
+        testAuthor.username = 'PushQueryTestUser';
+        room.users = [testAuthor];
+
+        // Set messages to contain just a single message first
+        var testExistingMessage = createTestMessage();
+        room.messages = [testExistingMessage];
+
+        async.waterfall([
+            function setRoot(nextCallback) {
+                var scope = new Scope({name: 'ChatRoomScope'});
+                scope.setRoot(room, function(err) {
+                    nextCallback(err, scope);
+                });
+            },
+
+            function executeUpdate(scope, nextCallback) {
+                scope.update({}, {
+                    $push: {
+                        messages: testExistingMessage.uuid
+                    }
+                }, nextCallback);
+            },
+
+            function verifyQueryResult(result, nextCallback) {
+                assert.equal(room.messages.length, 2);
+
+                assert.equal(room.messages.objectAtIndex(0).uuid, testExistingMessage.uuid);
+                assert.equal(room.messages.objectAtIndex(0).author, testExistingMessage.author);
+                assert.equal(room.messages.objectAtIndex(0).postedAt instanceof Date, true);
+                assert.equal(room.messages.objectAtIndex(0).text, testExistingMessage.text);
+
+                assert.equal(room.messages.objectAtIndex(0).uuid, testExistingMessage.uuid);
+                assert.equal(room.messages.objectAtIndex(1).author, testExistingMessage.author);
+                assert.equal(room.messages.objectAtIndex(1).postedAt instanceof Date, true);
+                assert.equal(room.messages.objectAtIndex(1).text, testExistingMessage.text);
+
+                assert.equal(result.matched.length, 1);
+                assert.equal(result.matched[0].uuid, room.uuid);
+                assert.equal(result.matched[0].clsName, room.typeName);
+
+                assert.equal(result.created.length, 0);
+
+                assert.equal(result.modified.length, 1);
+                assert.equal(result.modified[0].uuid, room.uuid);
+                assert.equal(result.modified[0].clsName, room.typeName);
+
+                nextCallback();
+            }
+
+        ], function(err) {
+            assert.ifError(err);
+            assert.end();
+        });
+    });
+
+    test(thing('should not be able to push a "new" ModelObject with an existing UUID'), function t(assert) {
+        var room = createTestChatRoom();
+
+        var testAuthor = createTestUser();
+        testAuthor.username = 'PushQueryTestUser';
+        room.users = [testAuthor];
+
+        var testExistingMessage = createTestMessage();
+        room.messages = [testExistingMessage];
+
+        async.waterfall([
+            function setRoot(nextCallback) {
+                var scope = new Scope({name: 'ChatRoomScope'});
+                scope.setRoot(room, function(err) {
+                    nextCallback(err, scope);
+                });
+            },
+
+            function executeUpdate(scope, nextCallback) {
+                scope.update({}, {
+                    $push: {
+                        messages: {
+                            $uuid: testExistingMessage.uuid,
+                            author: testAuthor.uuid,
+                            postedAt: new Date(),
+                            text: 'Overwrite message'
+                        }
+                    }
+                }, nextCallback);
+            },
+
+            function verifyQueryResult(result, nextCallback) {
+                assert.equal(result.writeErrors.length, 1);
+
+                assert.ok(new RegExp(testExistingMessage.uuid).test(result.writeErrors[0].message));
+                assert.ok(/already exists/.test(result.writeErrors[0].message));
+
+                nextCallback();
+            }
+
+        ], function(err) {
+            assert.ifError(err);
+            assert.end();
+        });
+    });
+
 });
