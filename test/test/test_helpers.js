@@ -102,7 +102,8 @@ ChatRoom.defineProcedure('postMessage', {
         headers: {
             'Authorization': expr('$scope.params.accessToken'),
             'X-ChatRoom-Locale': expr('$rootModel.attributes.locale'),
-            'X-ChatRoom-LastMessageId': expr('$incoming.ChatRoom.change.messages[-1]')
+            'X-ChatRoom-LastMessageId': expr('$incoming.ChatRoom.change.messages[-1]'),
+            'X-ChatRoom-InsertedMessageId': expr('$incoming.ChatRoom.change.messages[inserted[0]]')
         },
         body: {
             uuid: expr('$incoming.Message.add.uuid'),
@@ -110,6 +111,34 @@ ChatRoom.defineProcedure('postMessage', {
             postedAt: expr('$incoming.Message.add.postedAt'),
             text: expr('$incoming.Message.add.text'),
             tags: ['staticValue0', 'staticValue1']
+        }
+    }
+});
+
+ChatRoom.defineProcedure('userLogout', {
+    constraints: [
+        {
+            type: 'change',
+            clsName: 'ChatRoom',
+            properties: {
+                users: arrayPropertyConstraint({type: 'remove'})
+            },
+            allowAdditionalProperties: false
+        }    ],
+    remote: {
+        type: 'http',
+        url: 'http://chatRoomAPI/room/:chatRoomUUID/users/:userUUID/logout',
+        params: {
+            chatRoomUUID: expr('$incoming.ChatRoom.change.uuid'),
+            userUUID: expr('$incoming.ChatRoom.change.users[removed[0]]')
+        },
+        method: 'post',
+        headers: {
+            'Authorization': expr('$scope.params.accessToken'),
+            'X-ChatRoom-Locale': expr('$rootModel.attributes.locale')
+        },
+        body: {
+            uuid: expr('$incoming.ChatRoom.change.users[removed[0]]')
         }
     }
 });

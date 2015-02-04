@@ -19,6 +19,7 @@
 // THE SOFTWARE.
 'use strict';
 
+var _ = require('lodash');
 var async = require('async');
 var createTestChatRoom = require('../test/test_helpers').createTestChatRoom;
 var createTestContext = require('../test/test_context');
@@ -47,7 +48,7 @@ var test = redtape({
 
 describe(method('execute'), 'when executing procedures', function(thing) {
 
-    test(thing('should bind incoming and scope expression values'), function t(assert) {
+    test(thing('should bind simple incoming and scope expression values'), function t(assert) {
         var chatRoom = createTestChatRoom();
         var user = chatRoom.users.objectAtIndex(0);
 
@@ -96,7 +97,8 @@ describe(method('execute'), 'when executing procedures', function(thing) {
                 'Content-Type': 'application/json',
                 'Authorization': scope.params.accessToken,
                 'X-ChatRoom-Locale': 'en_US',
-                'X-ChatRoom-LastMessageId': newMessageUUID
+                'X-ChatRoom-LastMessageId': newMessageUUID,
+                'X-ChatRoom-InsertedMessageId': newMessageUUID
             });
 
             assert.deepEqual(options.json, {
@@ -108,6 +110,75 @@ describe(method('execute'), 'when executing procedures', function(thing) {
             });
 
             callback(null, {statusCode: 200}, '{"posted": true}');
+        }
+
+        async.waterfall([
+            function setRoot(nextCallback) {
+                scope.setRoot(chatRoom, function(err) {
+                    assert.ifError(err);
+                    nextCallback();
+                });
+            },
+
+            function executeProcedure(nextCallback) {
+                procedure.execute(scope, syncFragments, nextCallback);
+            },
+
+            function verifyProcedureResult(result, nextCallback) {
+                assert.ok(result instanceof SyncProcedureResult);
+                assert.equal(result.additionalFragments.length, 0);
+                nextCallback();
+            }
+
+        ], function(err) {
+            assert.ifError(err);
+            assert.end();
+        });
+    });
+
+    test(thing('should bind dynamic index incoming expression values'), function t(assert) {
+        var chatRoom = createTestChatRoom();
+        var user = chatRoom.users.objectAtIndex(0);
+
+        var existingUserUUIDs = chatRoom.users.map(function(user) {
+            return user.uuid;
+        });
+
+        var syncFragments = [
+            new SyncFragment({
+                uuid: chatRoom.uuid,
+                type: 'change',
+                clsName: 'ChatRoom',
+                properties: {
+                    users: _.without(existingUserUUIDs, user.uuid)
+                }
+            })
+        ];
+
+        var accessToken = uuid.v4();
+        var scope = new Scope({name: 'TestScope', params: {accessToken: accessToken}});
+
+        var procedure = chatRoom.getProcedure('userLogout');
+        assert.ok(procedure);
+        sandbox.stub(procedure, 'httpClient', mockHttpClient);
+
+        function mockHttpClient(options, callback) {
+            var url = 'http://chatRoomAPI/room/' + chatRoom.uuid + '/users/' + user.uuid + '/logout';
+            assert.equal(options.url, url);
+
+            assert.equal(options.method, 'POST');
+
+            assert.deepEqual(options.headers, {
+                'Content-Type': 'application/json',
+                'Authorization': scope.params.accessToken,
+                'X-ChatRoom-Locale': 'en_US'
+            });
+
+            assert.deepEqual(options.json, {
+                uuid: user.uuid
+            });
+
+            callback(null, {statusCode: 200}, '{"logout": true}');
         }
 
         async.waterfall([
