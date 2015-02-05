@@ -150,15 +150,13 @@ describe(method('execute'), 'when executing updates', function(thing) {
         });
     });
 
-    test(thing('should not be able to push a "new" ModelObject with an existing UUID'), function t(assert) {
+    test(thing('should be able to push an existing ModelObject and set properties'), function t(assert) {
         var room = createTestChatRoom();
-
-        var testAuthor = createTestUser();
-        testAuthor.username = 'PushQueryTestUser';
-        room.users = [testAuthor];
 
         var testExistingMessage = createTestMessage();
         room.messages = [testExistingMessage];
+
+        var testExistingMessageAuthor = testExistingMessage.author;
 
         async.waterfall([
             function setRoot(nextCallback) {
@@ -173,8 +171,6 @@ describe(method('execute'), 'when executing updates', function(thing) {
                     $push: {
                         messages: {
                             $uuid: testExistingMessage.uuid,
-                            author: testAuthor.uuid,
-                            postedAt: new Date(),
                             text: 'Overwrite message'
                         }
                     }
@@ -182,10 +178,29 @@ describe(method('execute'), 'when executing updates', function(thing) {
             },
 
             function verifyQueryResult(result, nextCallback) {
-                assert.equal(result.writeErrors.length, 1);
+                assert.equal(room.messages.length, 2);
 
-                assert.ok(new RegExp(testExistingMessage.uuid).test(result.writeErrors[0].message));
-                assert.ok(/already exists/.test(result.writeErrors[0].message));
+                assert.equal(room.messages.objectAtIndex(0).uuid, testExistingMessage.uuid);
+                assert.equal(room.messages.objectAtIndex(0).author, testExistingMessageAuthor);
+                assert.equal(room.messages.objectAtIndex(0).text, 'Overwrite message');
+
+                assert.equal(room.messages.objectAtIndex(1).uuid, testExistingMessage.uuid);
+                assert.equal(room.messages.objectAtIndex(1).author, testExistingMessageAuthor);
+                assert.equal(room.messages.objectAtIndex(1).text, 'Overwrite message');
+
+                assert.equal(result.matched.length, 1);
+                assert.equal(result.matched[0].uuid, room.uuid);
+                assert.equal(result.matched[0].clsName, room.typeName);
+
+                assert.equal(result.created.length, 0);
+
+                assert.equal(result.modified.length, 2);
+
+                assert.equal(result.modified[0].uuid, room.uuid);
+                assert.equal(result.modified[0].clsName, room.typeName);
+
+                assert.equal(result.modified[1].uuid, testExistingMessage.uuid);
+                assert.equal(result.modified[1].clsName, testExistingMessage.typeName);
 
                 nextCallback();
             }
