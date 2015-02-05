@@ -148,4 +148,55 @@ describe(method('execute'), 'when executing updates', function(thing) {
         });
     });
 
+    test(thing('should be able to perform null property setting'), function t(assert) {
+        var room = createTestChatRoom();
+
+        var testAuthor = createTestUser();
+        testAuthor.username = 'SetQueryTestUser';
+        room.users = [testAuthor];
+
+        var testExistingMessage = createTestMessage();
+        testExistingMessage.author = testAuthor;
+        room.messages = [testExistingMessage];
+
+        async.waterfall([
+            function setRoot(nextCallback) {
+                var scope = new Scope({name: 'ChatRoomScope'});
+                scope.setRoot(room, function(err) {
+                    assert.equal(room.messages.objectAtIndex(0).author, testAuthor);
+                    nextCallback(err, scope);
+                });
+            },
+
+            function executeUpdate(scope, nextCallback) {
+                // Set author on first message to null
+                scope.update({}, {
+                    $set: {
+                        'messages[0].author': null
+                    }
+                }, nextCallback);
+            },
+
+            function verifyQueryResult(result, nextCallback) {
+                assert.equal(room.messages.length, 1);
+
+                assert.equal(room.messages.objectAtIndex(0).author, null);
+
+                assert.equal(result.matched.length, 1);
+                assert.equal(result.matched[0].uuid, room.uuid);
+                assert.equal(result.matched[0].clsName, room.typeName);
+
+                assert.equal(result.modified.length, 1);
+                assert.equal(result.modified[0].uuid, testExistingMessage.uuid);
+                assert.equal(result.modified[0].clsName, testExistingMessage.typeName);
+
+                nextCallback();
+            }
+
+        ], function(err) {
+            assert.ifError(err);
+            assert.end();
+        });
+    });
+
 });
