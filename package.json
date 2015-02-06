@@ -39,6 +39,7 @@
     "body-parser": "^1.6.5",
     "callback-or-emit-error": "^1.0.1",
     "debug": "^1.0.4",
+    "deep-freeze-strict": "^1.1.0",
     "deepequal": "0.0.1",
     "dotty": "0.0.2",
     "error": "^4.3.0",

@@ -19,7 +19,13 @@
 // THE SOFTWARE.
 'use strict';
 
+var createEnum = require('../').enumeration;
 var createModel = require('../').model;
+
+var ChatRoomStatus = createEnum('ChatRoomStatus', Number, {
+    'Open': 0,
+    'Closed': 1
+});
 
 var User = createModel('User', function() {
     this.has('username', String);
@@ -34,6 +40,7 @@ var Message = createModel('Message', function() {
 });
 
 var ChatRoomAttributes = createModel('ChatRoomAttributes', function() {
+    this.has('status', ChatRoomStatus);
     this.has('topic', String);
     this.has('tintColor', Number);
     this.has('locale', String);
@@ -50,5 +57,6 @@ module.exports = {
     User: User,
     Message: Message,
     ChatRoom: ChatRoom,
-    ChatRoomAttributes: ChatRoomAttributes
+    ChatRoomAttributes: ChatRoomAttributes,
+    ChatRoomStatus: ChatRoomStatus
 };

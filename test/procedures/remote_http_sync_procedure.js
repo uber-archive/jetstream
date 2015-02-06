@@ -96,6 +96,7 @@ describe(method('execute'), 'when executing procedures', function(thing) {
             assert.deepEqual(options.headers, {
                 'Content-Type': 'application/json',
                 'Authorization': scope.params.accessToken,
+                'X-ChatRoom-Status': 'OPEN',
                 'X-ChatRoom-Locale': 'en_US',
                 'X-ChatRoom-LastMessageId': newMessageUUID,
                 'X-ChatRoom-InsertedMessageId': newMessageUUID

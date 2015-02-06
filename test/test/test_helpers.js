@@ -21,12 +21,14 @@
 
 var ChatRoom = require('../../demos/chat').ChatRoom;
 var ChatRoomAttributes = require('../../demos/chat').ChatRoomAttributes;
+var ChatRoomStatus = require('../../demos/chat').ChatRoomStatus;
 var Message = require('../../demos/chat').Message;
 var User = require('../../demos/chat').User;
 
 module.exports = {
     ChatRoom: ChatRoom,
     ChatRoomAttributes: ChatRoomAttributes,
+    ChatRoomStatus: ChatRoomStatus,
     Message: Message,
     User: User,
     createTestUser: createTestUser,
@@ -59,6 +61,7 @@ function createTestMessage(author) {
 function createTestChatRoom() {
     var user = createTestUser();
     var attributes = new ChatRoomAttributes();
+    attributes.status = ChatRoomStatus.Open;
     attributes.topic = 'This is a test chat room';
     attributes.locale = 'en_US';
 
@@ -71,6 +74,10 @@ function createTestChatRoom() {
 }
 
 // Add procedures for procedure testing
+var caseStatusValue = {};
+caseStatusValue[ChatRoomStatus.Open] = 'OPEN';
+caseStatusValue[ChatRoomStatus.Closed] = 'CLOSED';
+
 ChatRoom.defineProcedure('postMessage', {
     constraints: [
         {
@@ -102,6 +109,7 @@ ChatRoom.defineProcedure('postMessage', {
         headers: {
             'Authorization': expr('$scope.params.accessToken'),
             'X-ChatRoom-Locale': expr('$rootModel.attributes.locale'),
+            'X-ChatRoom-Status': expr('$case.statusValue($rootModel.attributes.status)'),
             'X-ChatRoom-LastMessageId': expr('$incoming.ChatRoom.change.messages[-1]'),
             'X-ChatRoom-InsertedMessageId': expr('$incoming.ChatRoom.change.messages[inserted[0]]')
         },
@@ -111,6 +119,9 @@ ChatRoom.defineProcedure('postMessage', {
             postedAt: expr('$incoming.Message.add.postedAt'),
             text: expr('$incoming.Message.add.text'),
             tags: ['staticValue0', 'staticValue1']
+        },
+        cases: {
+            statusValue: caseStatusValue
         }
     }
 });
