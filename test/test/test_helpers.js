@@ -110,8 +110,9 @@ ChatRoom.defineProcedure('postMessage', {
             'Authorization': expr('$scope.params.accessToken'),
             'X-ChatRoom-Locale': expr('$rootModel.attributes.locale'),
             'X-ChatRoom-Status': expr('$case.statusValue($rootModel.attributes.status)'),
-            'X-ChatRoom-LastMessageId': expr('$incoming.ChatRoom.change.messages[-1]'),
-            'X-ChatRoom-InsertedMessageId': expr('$incoming.ChatRoom.change.messages[inserted[0]]')
+            'X-ChatRoom-MessageId': expr('$incoming.ChatRoom.change.messages[-1]'),
+            'X-ChatRoom-InsertedMessageId': expr('$incoming.ChatRoom.change.messages[inserted[0]]'),
+            'X-ChatRoom-PreviousMessageAuthorUsername': expr('$model.find($incoming.ChatRoom.change.uuid).messages[-1].author.username')
         },
         body: {
             uuid: expr('$incoming.Message.add.uuid'),

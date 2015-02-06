@@ -52,6 +52,8 @@ describe(method('execute'), 'when executing procedures', function(thing) {
         var chatRoom = createTestChatRoom();
         var user = chatRoom.users.objectAtIndex(0);
 
+        var previousMessage = chatRoom.messages.objectAtIndex(-1);
+
         var newMessageUUID = uuid.v4();
         var newMessagePostedAt = new Date().getTime();
         var newMessageText = 'This is a new message';
@@ -98,8 +100,9 @@ describe(method('execute'), 'when executing procedures', function(thing) {
                 'Authorization': scope.params.accessToken,
                 'X-ChatRoom-Status': 'OPEN',
                 'X-ChatRoom-Locale': 'en_US',
-                'X-ChatRoom-LastMessageId': newMessageUUID,
-                'X-ChatRoom-InsertedMessageId': newMessageUUID
+                'X-ChatRoom-MessageId': newMessageUUID,
+                'X-ChatRoom-InsertedMessageId': newMessageUUID,
+                'X-ChatRoom-PreviousMessageAuthorUsername': previousMessage.author.username
             });
 
             assert.deepEqual(options.json, {
