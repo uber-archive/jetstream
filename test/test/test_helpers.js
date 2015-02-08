@@ -74,6 +74,31 @@ function createTestChatRoom() {
 }
 
 // Add procedures for procedure testing
+ChatRoom.defineProcedure('setName', {
+    constraints: [
+        {
+            type: 'change',
+            clsName: 'ChatRoom',
+            properties: {
+                name: hasNewValuePropertyConstraint()
+            },
+            allowAdditionalProperties: false
+        }
+    ],
+    remote: {
+        type: 'http',
+        url: 'http://chatRoomAPI/room/:chatRoomUUID',
+        params: {
+            chatRoomUUID: expr('$incoming.ChatRoom.change.uuid')
+        },
+        method: 'post',
+        headers: {
+            'Authorization': expr('$scope.params.accessToken'),
+            'X-ChatRoom-SetName': expr('$incoming.ChatRoom.change.name')
+        }
+    }
+});
+
 var caseStatusValue = {};
 caseStatusValue[ChatRoomStatus.Open] = 'OPEN';
 caseStatusValue[ChatRoomStatus.Closed] = 'CLOSED';

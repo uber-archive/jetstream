@@ -48,6 +48,67 @@ var test = redtape({
 
 describe(method('execute'), 'when executing procedures', function(thing) {
 
+    test(thing('should allow null body'), function t(assert) {
+        var chatRoom = createTestChatRoom();
+
+        var syncFragments = [
+            new SyncFragment({
+                uuid: chatRoom.uuid,
+                type: 'change',
+                clsName: 'ChatRoom',
+                properties: {
+                    name: 'New chat room name'
+                }
+            })
+        ];
+
+        var accessToken = uuid.v4();
+        var scope = new Scope({name: 'TestScope', params: {accessToken: accessToken}});
+
+        var procedure = chatRoom.getProcedure('setName');
+        assert.ok(procedure);
+        sandbox.stub(procedure, 'httpClient', mockHttpClient);
+
+        function mockHttpClient(options, callback) {
+            assert.equal(options.url, 'http://chatRoomAPI/room/' + chatRoom.uuid);
+
+            assert.equal(options.method, 'POST');
+
+            assert.deepEqual(options.headers, {
+                'Content-Type': 'application/json',
+                'Authorization': scope.params.accessToken,
+                'X-ChatRoom-SetName': 'New chat room name'
+            });
+
+            assert.equal(options.json, undefined);
+
+            callback(null, {statusCode: 200}, '{"updated": true}');
+        }
+
+        async.waterfall([
+            function setRoot(nextCallback) {
+                scope.setRoot(chatRoom, function(err) {
+                    assert.ifError(err);
+                    nextCallback();
+                });
+            },
+
+            function executeProcedure(nextCallback) {
+                procedure.execute(scope, syncFragments, nextCallback);
+            },
+
+            function verifyProcedureResult(result, nextCallback) {
+                assert.ok(result instanceof SyncProcedureResult);
+                assert.equal(result.additionalFragments.length, 0);
+                nextCallback();
+            }
+
+        ], function(err) {
+            assert.ifError(err);
+            assert.end();
+        });
+    });
+
     test(thing('should bind simple incoming and scope expression values'), function t(assert) {
         var chatRoom = createTestChatRoom();
         var user = chatRoom.users.objectAtIndex(0);
