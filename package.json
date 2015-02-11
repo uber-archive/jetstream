@@ -25,7 +25,7 @@
     "test-cover": "istanbul cover tape -- test/index.js | tap-spec",
     "view-cover": "istanbul report html && open ./coverage/index.html",
     "test-coveralls": "istanbul cover tape --report lcovonly -- test/index.js | tap-spec && cat ./coverage/lcov.info | coveralls",
-    "start": "node demos/app.js",
+    "start": "DEBUG=jetstream* node demos/app.js",
     "check-licence": "uber-licence --dry",
     "add-licence": "uber-licence"
   },
