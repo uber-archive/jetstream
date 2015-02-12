@@ -166,7 +166,7 @@ describe(method('execute'), 'when executing procedures', function(thing) {
                 'X-ChatRoom-PreviousMessageAuthorUsername': previousMessage.author.username
             });
 
-            assert.deepEqual(options.json, {
+            assert.deepEqual(JSON.parse(options.body), {
                 uuid: newMessageUUID,
                 authorUUID: user.uuid,
                 postedAt: newMessagePostedAt,
@@ -239,7 +239,7 @@ describe(method('execute'), 'when executing procedures', function(thing) {
                 'X-ChatRoom-Locale': 'en_US'
             });
 
-            assert.deepEqual(options.json, {
+            assert.deepEqual(JSON.parse(options.body), {
                 uuid: user.uuid
             });
 
