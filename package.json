@@ -49,7 +49,6 @@
     "node-uuid": "^1.4.1",
     "replr": "^0.2.4",
     "request": "^2.51.0",
-    "request-debug": "^0.1.1",
     "robb": "^0.2.1",
     "rust-result": "^0.1.0",
     "semver": "^4.0.0",

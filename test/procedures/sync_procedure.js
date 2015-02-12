@@ -95,7 +95,7 @@ describe(method('execute'), 'when executing procedures', function(thing) {
         sandbox.stub(procedure, 'httpClient', mockHttpClient);
 
         function mockHttpClient(options, callback) {
-            callback(null, {statusCode: 200}, '{"posted": true}');
+            callback(null, {statusCode: 200}, {posted: true});
         }
 
         async.waterfall([

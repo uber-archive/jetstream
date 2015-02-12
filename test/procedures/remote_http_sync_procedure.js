@@ -82,7 +82,7 @@ describe(method('execute'), 'when executing procedures', function(thing) {
 
             assert.equal(options.json, undefined);
 
-            callback(null, {statusCode: 200}, '{"updated": true}');
+            callback(null, {statusCode: 200}, {updated: true});
         }
 
         async.waterfall([
@@ -174,7 +174,7 @@ describe(method('execute'), 'when executing procedures', function(thing) {
                 tags: ['staticValue0', 'staticValue1']
             });
 
-            callback(null, {statusCode: 200}, '{"posted": true}');
+            callback(null, {statusCode: 200}, {posted: true});
         }
 
         async.waterfall([
@@ -243,7 +243,7 @@ describe(method('execute'), 'when executing procedures', function(thing) {
                 uuid: user.uuid
             });
 
-            callback(null, {statusCode: 200}, '{"logout": true}');
+            callback(null, {statusCode: 200}, {logout: true});
         }
 
         async.waterfall([
