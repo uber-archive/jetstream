@@ -22,11 +22,12 @@
 var async = require('async');
 var Canvas = require('../demos/shapes').Canvas;
 var createTestContext = require('./test/test_context');
+var ModelObject = require('../lib/model_object');
+var redtape = require('redtape');
 var Scope = require('../lib/scope');
 var Shape = require('../demos/shapes').Shape;
 var sinon = require('sinon');
 var SyncFragment = require('../lib/sync_fragment');
-var redtape = require('redtape');
 
 var context = createTestContext('Scope');
 var describe = context.describe;
@@ -135,6 +136,72 @@ describe(method('applySyncFragments'), 'when removing orphaned objects', functio
 
                 assert.ok(removeModelObjectSpy.calledOnce);
                 assert.ok(removeModelObjectSpy.calledWith(shape1));
+
+                nextCallback();
+            }
+
+        ], function(err) {
+            assert.ifError(err);
+            assert.end();
+        });
+    });
+
+    test(thing('should clear the newly orphaned model objects after orphans are removed'), function t(assert) {
+        var scope = new Scope({name: 'TestScope'});
+
+        var TestModel = ModelObject.model('TestModel', function() {
+            this.has('children', [this]);
+        });
+
+        var root = new TestModel();
+        var child = new TestModel();
+        var grandchild1 = new TestModel();
+        var grandchild2 = new TestModel();
+
+        // Build circular graph:
+        //      o
+        //       \
+        //        o
+        //       / \
+        //      o---o
+        root.children = [child];
+        child.children = [grandchild1, grandchild2];
+        grandchild1.children = [grandchild2];
+
+        var removeModelObjectSpy = sandbox.spy(scope, 'removeModelObject');
+
+        async.series([
+            function setRoot(nextCallback) {
+                scope.setRoot(root, nextCallback);
+            },
+
+            function getAllModelObjects(nextCallback) {
+                assert.equal(scope.persist._modelObjects.length, 4);
+                nextCallback();
+            },
+
+            function applyChangeToRemoveChild(nextCallback) {
+                var change = new SyncFragment({
+                    type: 'change',
+                    clsName: 'TestModel',
+                    uuid: root.uuid,
+                    properties: {
+                        children: []
+                    }
+                });
+
+                scope.applySyncFragments([change], nextCallback);
+            },
+
+            function getAllModelObjects(nextCallback) {
+                assert.equal(scope.persist._modelObjects.length, 1);
+                nextCallback();
+            },
+
+            function assertOrphanedModelObjectsClearedAndShape1Removed(nextCallback) {
+                assert.equal(Object.keys(scope._orphanedModelObjects).length, 0);
+
+                assert.equal(removeModelObjectSpy.callCount, 3);
 
                 nextCallback();
             }
