@@ -1,4 +1,5 @@
-![Jetstream](https://raw.githubusercontent.com/uber/jetstream/assets/jetstream.png)
+![Jetstream](https://raw.githubusercontent.com/uber/jetstream-ios/assets/jetstream.png)
+
 
 [![Build Status](https://img.shields.io/travis/uber/jetstream.svg?style=flat)](https://travis-ci.org/uber/jetstream)
 
