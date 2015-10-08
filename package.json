@@ -1,6 +1,6 @@
 {
   "name": "jetstream",
-  "version": "0.11.3",
+  "version": "0.11.4",
   "description": "Jetstream Sync server framework to sync local and remote models",
   "keywords": [
     "framework",
