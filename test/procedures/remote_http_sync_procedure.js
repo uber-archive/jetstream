@@ -99,7 +99,7 @@ describe(method('execute'), 'when executing procedures', function(thing) {
 
             function verifyProcedureResult(result, nextCallback) {
                 assert.ok(result instanceof SyncProcedureResult);
-                assert.equal(result.additionalFragments.length, 0);
+                assert.equal(result.updates.length, 0);
                 nextCallback();
             }
 
@@ -191,7 +191,7 @@ describe(method('execute'), 'when executing procedures', function(thing) {
 
             function verifyProcedureResult(result, nextCallback) {
                 assert.ok(result instanceof SyncProcedureResult);
-                assert.equal(result.additionalFragments.length, 0);
+                assert.equal(result.updates.length, 0);
                 nextCallback();
             }
 
@@ -260,7 +260,7 @@ describe(method('execute'), 'when executing procedures', function(thing) {
 
             function verifyProcedureResult(result, nextCallback) {
                 assert.ok(result instanceof SyncProcedureResult);
-                assert.equal(result.additionalFragments.length, 0);
+                assert.equal(result.updates.length, 0);
                 nextCallback();
             }
 

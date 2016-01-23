@@ -21,6 +21,7 @@
 
 var async = require('async');
 var Canvas = require('../demos/shapes').Canvas;
+var createTestChatRoom = require('./test/test_helpers').createTestChatRoom;
 var createTestContext = require('./test/test_context');
 var ModelObject = require('../lib/model_object');
 var redtape = require('redtape');
@@ -28,6 +29,7 @@ var Scope = require('../lib/scope');
 var Shape = require('../demos/shapes').Shape;
 var sinon = require('sinon');
 var SyncFragment = require('../lib/sync_fragment');
+var uuid = require('node-uuid');
 
 var context = createTestContext('Scope');
 var describe = context.describe;
@@ -203,6 +205,81 @@ describe(method('applySyncFragments'), 'when removing orphaned objects', functio
 
                 assert.equal(removeModelObjectSpy.callCount, 3);
 
+                nextCallback();
+            }
+
+        ], function(err) {
+            assert.ifError(err);
+            assert.end();
+        });
+    });
+
+    test(thing('should apply procedure updates on success'), function t(assert) {
+        var chatRoom = createTestChatRoom();
+
+        var newChatRoomName = 'New name';
+
+        var syncFragments = [
+            new SyncFragment({
+                uuid: chatRoom.uuid,
+                type: 'change',
+                clsName: 'ChatRoom',
+                properties: {
+                    name: newChatRoomName
+                }
+            })
+        ];
+
+        var updatedTopicName = 'Room renamed "' + chatRoom.name + '" to "' + newChatRoomName + '"';
+
+        var accessToken = uuid.v4();
+        var scope = new Scope({name: 'TestScope', params: {accessToken: accessToken}});
+
+        var procedure = chatRoom.getProcedure('setName');
+        assert.ok(procedure);
+        sandbox.stub(procedure, 'httpClient', mockHttpClient);
+
+        function mockHttpClient(options, callback) {
+            assert.equal(options.url, 'http://chatRoomAPI/room/' + chatRoom.uuid);
+
+            assert.equal(options.method, 'POST');
+
+            assert.deepEqual(options.headers, {
+                'Content-Type': 'application/json',
+                'Authorization': scope.params.accessToken,
+                'X-ChatRoom-SetName': newChatRoomName
+            });
+
+            assert.equal(options.json, undefined);
+
+            var updates = [
+                {
+                    update: {
+                        $set: {
+                            'attributes.topic': updatedTopicName
+                        }
+                    }
+                }
+            ];
+
+            callback(null, {statusCode: 200}, {_updates: updates});
+        }
+
+        async.series([
+            function setRoot(nextCallback) {
+                scope.setRoot(chatRoom, function(err) {
+                    assert.ifError(err);
+                    nextCallback();
+                });
+            },
+
+            function applyChangeToRemoveSecondShape(nextCallback) {
+                var options = {procedure: 'ChatRoom.setName'};
+                scope.applySyncFragments(syncFragments, options, nextCallback);
+            },
+
+            function assertUpdatesApplied(nextCallback) {
+                assert.equal(chatRoom.attributes.topic, updatedTopicName);
                 nextCallback();
             }
 
