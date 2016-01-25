@@ -80,7 +80,7 @@ describe(method('execute'), 'when executing procedures', function(thing) {
                 'X-ChatRoom-SetName': 'New chat room name'
             });
 
-            assert.equal(options.json, undefined);
+            assert.equal(options.json, true);
 
             callback(null, {statusCode: 200}, {updated: true});
         }
@@ -166,7 +166,7 @@ describe(method('execute'), 'when executing procedures', function(thing) {
                 'X-ChatRoom-PreviousMessageAuthorUsername': previousMessage.author.username
             });
 
-            assert.deepEqual(JSON.parse(options.body), {
+            assert.deepEqual(options.json, {
                 uuid: newMessageUUID,
                 authorUUID: user.uuid,
                 postedAt: newMessagePostedAt,
@@ -239,7 +239,7 @@ describe(method('execute'), 'when executing procedures', function(thing) {
                 'X-ChatRoom-Locale': 'en_US'
             });
 
-            assert.deepEqual(JSON.parse(options.body), {
+            assert.deepEqual(options.json, {
                 uuid: user.uuid
             });
 

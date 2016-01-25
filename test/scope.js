@@ -250,7 +250,7 @@ describe(method('applySyncFragments'), 'when removing orphaned objects', functio
                 'X-ChatRoom-SetName': newChatRoomName
             });
 
-            assert.equal(options.json, undefined);
+            assert.equal(options.json, true);
 
             var updates = [
                 {
