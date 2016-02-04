@@ -1,0 +1,47 @@
+{
+  "name": "jetstream-js",
+  "version": "0.0.1",
+  "description": "Jetstream JS Framework",
+  "keywords": [],
+  "repository": "git://github.com/uber/jetstream.git",
+  "main": "index",
+  "contributors": [
+    {
+      "name": "Jonathan Chao"
+    }
+  ],
+  "scripts": {
+    "build": "gulp build",
+    "build-production": "gulp build --production",
+    "jshint": "gulp jshint",
+    "test": "tape test/index.js | tap-spec",
+    "watch": "gulp watch"
+  },
+  "dependencies": {
+    "keymirror": "~0.1.0",
+    "lodash": "~2.4.0",
+    "node-uuid": "~1.4.0"
+  },
+  "devDependencies": {
+    "browserify": "~6.2.0",
+    "gulp": "~3.8.0",
+    "gulp-jshint": "~1.9.0",
+    "gulp-rename": "~1.2.0",
+    "gulp-uglify": "~1.0.0",
+    "gulp-util": "~3.0.1",
+    "jshint-stylish": "~1.0.0",
+    "sinon": "~1.10.0",
+    "tap-spec": "~1.0.0",
+    "tape": "~3.0.0",
+    "vinyl-transform": "~1.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/uber/jetstream/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/uber/jetstream/LICENSE"
+    }
+  ]
+}
