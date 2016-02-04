@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Jetstream - Shapes Demo</title>
+    <style>
+      body { text-align: center; }
+    </style>
+  </head>
+  <body>
+    <button id="connect">Shapes Demo</button>
+    <script src="../../build/jetstream.js"></script>
+    <script>
+      window.DEBUG = true;
+
+///////////////////////////////////////////////////////////////////////////////
+// UTILITIES
+
+      function _colorToHex(color) {
+        var r = (color >> 24) & 0xFF;
+        var g = (color >> 16) & 0XFF;
+        var b = (color >> 8) & 0xFF;
+        return '#' + ((r << 16) + (g << 8) + b).toString(16);
+      }
+
+      function _hexToColor(hex) {
+        hex = parseInt(hex.substr(1), 16);
+        var r = (hex >> 16) & 255;
+        var g = (hex >> 8) & 255;
+        var b = hex & 255;
+        var a = 255;
+        return ((r << 24) + (g << 16) + (b << 8) + a) >>> 0;
+      }
+
+///////////////////////////////////////////////////////////////////////////////
+// MODELS
+
+      var _shapeColors = [
+        '#1dd2af', '#19b698', '#40d47e', '#2cc36b', '#4aa3df', '#2e8ece',
+        '#a66bbe', '#9b50ba', '#3d566e', '#354b60', '#f2ca27', '#f4a62a',
+        '#e98b39', '#ec5e00', '#ea6153', '#d14233', '#8c9899'
+      ].reduce(function(result, value) {
+        result[value] = _hexToColor(value);
+        return result;
+      }, {});
+
+      var ShapeColors = Jetstream.enumeration('ShapeColors', Number, _shapeColors);
+
+      var Shape = Jetstream.model({
+        name: 'Shape',
+        definition: function() {
+          this.has('x', Number);
+          this.has('y', Number);
+          this.has('width', Number, { defaultValue: 100 });
+          this.has('height', Number, { defaultValue: 100 });
+          this.has('color', ShapeColors, { defaultValue: ShapeColors['#1dd2af'] });
+        }
+      });
+
+      var Canvas = Jetstream.model('Canvas', function() {
+        this.has('name', String);
+        this.has('shapes', [Shape]);
+      });
+
+///////////////////////////////////////////////////////////////////////////////
+// VIEWS
+
+      function ShapeView(model) {
+        this.model = model;
+        this.model.on('change:x change:y change:width change:height change:color', this._draw.bind(this));
+        this.model.on('scopeDetached', this._onScopeDetach.bind(this));
+
+        // Create element and set styles
+        this.view = document.createElement('div');
+        this.view.style.borderRadius = '5px';
+        this.view.style.position = 'absolute';
+
+        document.body.appendChild(this.view);
+        this._draw();
+      }
+
+      ShapeView.prototype._draw = function() {
+        var backgroundColor = _colorToHex(this.model.get('color'));
+        this.view.style.backgroundColor = backgroundColor;
+        this.view.style.height = this.model.get('height') + 'px';
+        this.view.style.left = this.model.get('x') + 'px';
+        this.view.style.top = this.model.get('y') + 'px';
+        this.view.style.width = this.model.get('width') + 'px';
+      };
+
+      ShapeView.prototype._onScopeDetach = function() {
+        this.view.parentNode.removeChild(this.view);
+      };
+
+      function CanvasView(model) {
+        this._dragData = null;
+        this._shapeViews = [];
+
+        this._model = model;
+        this._model.on('add:shapes', this._onModelShapesAdd.bind(this));
+
+        window.addEventListener('click', this._onClick.bind(this));
+        window.addEventListener('mousedown', this._onMouseDown.bind(this));
+        window.addEventListener('mousemove', this._onMouseMove.bind(this));
+        window.addEventListener('mouseup', this._onMouseUp.bind(this));
+      }
+
+      CanvasView.prototype._findShapeView = function(e) {
+        for (var i = 0; i < this._shapeViews.length; i++) {
+          var shapeView = this._shapeViews[i];
+          if (e.target === shapeView.view) {
+            return shapeView;
+          }
+        }
+
+        return null;
+      };
+
+      CanvasView.prototype._onModelShapesAdd = function(model) {
+        this._shapeViews.push(new ShapeView(model));
+      };
+
+      CanvasView.prototype._onClick = function(e) {
+        var shapeView = this._findShapeView(e);
+        if (shapeView) {
+          return;
+        }
+
+        var shape = new Shape();
+        var colorKeys = ShapeColors.getKeys();
+        var color = ShapeColors[colorKeys[Math.floor(Math.random() * colorKeys.length)]];
+
+        shape.set({
+          color: color,
+          x: e.clientX - 50,
+          y: e.clientY - 50,
+          width: 100,
+          height: 100
+        });
+
+        this._model.get('shapes').push(shape);
+      };
+
+      CanvasView.prototype._onMouseDown = function(e) {
+        this._dragData = null;
+
+        var shapeView = this._findShapeView(e);
+        if (shapeView) {
+          this._dragData = {
+            offsetX: e.clientX - shapeView.view.offsetLeft,
+            offsetY: e.clientY - shapeView.view.offsetTop,
+            shape: shapeView.model
+          }
+        }
+      };
+
+      CanvasView.prototype._onMouseMove = function(e) {
+        if (this._dragData) {
+          this._dragData.shape.set({
+            x: e.clientX - this._dragData.offsetX,
+            y: e.clientY - this._dragData.offsetY
+          });
+
+          this._dragData.moved = true;
+        }
+      };
+
+      CanvasView.prototype._onMouseUp = function(e) {
+        if (!this._dragData || !this._dragData.moved) {
+          var shapeView = this._findShapeView(e);
+          if (shapeView) {
+            shapeView.model.detach();
+          }
+        }
+
+        this._dragData = null;
+      };
+
+///////////////////////////////////////////////////////////////////////////////
+// APP
+
+      window.onload = function() {
+        var transport = Jetstream.transport.WebSocket({ url: 'ws://localhost:3000' });
+        var scope = Jetstream.scope({ name: 'Canvas' });
+
+        var canvas = new Canvas();
+        canvas.setScopeAndMakeRootModel(scope);
+
+        var client = Jetstream({ transport: transport });
+        client.once('session', function(session) {
+          session.fetch(scope, function(error) {
+            if (!error) {
+              new CanvasView(canvas);
+            }
+          });
+        });
+
+        document.getElementById('connect').addEventListener('click', function() {
+          this.parentNode.removeChild(this);
+
+          // Connect to the server
+          client.connect();
+        }, true);
+      };
+    </script>
+  </body>
+</html>
